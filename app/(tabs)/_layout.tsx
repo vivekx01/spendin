@@ -1,45 +1,57 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+const TabLayout = () => {
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+      screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
+        tabBarActiveTintColor: 'white', 
+        tabBarInactiveTintColor: 'gray',
+        tabBarPressOpacity: 0.6,
+        tabBarShowLabel: false,
+        tabBarStyle: { 
+          height: 60,
+          backgroundColor: 'black',
+        },
+        tabBarItemStyle: { justifyContent: 'center' },
+        tabBarLabelStyle: { fontSize: 14, color: 'white', fontWeight: 'normal' },
+        tabBarIconStyle: { marginTop: 5 },
+        tabBarIcon: ({ color }) => {
+          let size = 30;
+          let iconName;
+          switch (route.name) {
+            case 'index':
+              iconName = 'analytics-outline';
+              break;
+            case 'SpendHistory':
+              iconName = 'swap-vertical-outline';
+              break;
+            case 'Accounts':
+              iconName = 'wallet-outline';
+              break;
+            case 'Investments':
+              iconName = 'trending-up';
+              break;
+            case 'AddNewSpend':
+              iconName = 'add-circle-outline';
+              break;
+            default:
+              iconName = 'ellipse-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tabs.Screen name="index" options={{ title: "Dashboard" }} />
+      <Tabs.Screen name="SpendHistory" options={{ title: "Spends" }} />
+      <Tabs.Screen name="AddNewSpend" options={{ title: "Add" }} />
+      <Tabs.Screen name="Accounts" options={{ title: "Accounts" }} />
+      <Tabs.Screen name="Investments" options={{ title: "Investments" }} />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;
