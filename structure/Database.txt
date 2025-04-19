@@ -1,0 +1,35 @@
+Accounts:
+id - uuid
+account_type - enum (Bank/credit)
+acount_name - string
+account_balance -number
+
+Allocations/categories(whatever u feel is right)
+id - uuid
+allocation_account- account id (foreign key)
+allocation_name - string
+allocation_amount - number
+
+Spends
+id - uuid
+spend_category - allocation id (foreign key)
+spend_source - account id (foreign key)
+spend_amount - number
+spend_datetime - unix epoch timestamp
+spend_name - string
+spend_notes - string
+
+
+presets(saved fixed transaction details basically, you can change the name to whatever u feel is right)
+id - uuid
+name - string
+account - account id (foreign key)
+allocation - allocation id (foreign key)
+
+
+userinfo
+id - uuid
+name - string
+
+
+

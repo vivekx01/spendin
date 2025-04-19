@@ -7,11 +7,11 @@ const TabLayout = () => {
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: 'white', 
+        tabBarActiveTintColor: 'white',
         tabBarInactiveTintColor: 'gray',
         tabBarPressOpacity: 0.6,
         tabBarShowLabel: false,
-        tabBarStyle: { 
+        tabBarStyle: {
           height: 60,
           backgroundColor: 'black',
         },
@@ -22,7 +22,7 @@ const TabLayout = () => {
           let size = 30;
           let iconName;
           switch (route.name) {
-            case 'index':
+            case 'Home':
               iconName = 'analytics-outline';
               break;
             case 'SpendHistory':
@@ -45,7 +45,7 @@ const TabLayout = () => {
         },
       })}
     >
-      <Tabs.Screen name="index" options={{ title: "Dashboard" }} />
+      <Tabs.Screen name="Home" options={{ title: "Dashboard" }} />
       <Tabs.Screen name="SpendHistory" options={{ title: "Spends" }} />
       <Tabs.Screen name="AddNewSpend" options={{ title: "Add" }} />
       <Tabs.Screen name="Accounts" options={{ title: "Accounts" }} />

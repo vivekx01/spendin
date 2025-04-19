@@ -39,12 +39,12 @@ const TABLES = [
   );`
 ];
 
-async function initDatabase() {
+async function setupDatabase() {
   try {
     const db = await SQLite.openDatabaseAsync('expenses');
-    
+
     await db.execAsync('PRAGMA journal_mode = WAL;');
-    
+
     for (const query of TABLES) {
       await db.execAsync(query);
     }
@@ -55,4 +55,4 @@ async function initDatabase() {
   }
 }
 
-export { initDatabase };
+export { setupDatabase };
