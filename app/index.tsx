@@ -1,8 +1,8 @@
-import { Text, View } from "react-native";
 import { useEffect } from "react";
 import { setupDatabase } from "@/db/dbInit";
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from "@/components/SplashScreen";
 
 export default function Index() {
 
@@ -12,11 +12,9 @@ export default function Index() {
         const isFirstRun = await AsyncStorage.getItem('@isFirstRun');
         if (isFirstRun === null) {
           await setupDatabase();
-          console.log("Database setup completed on first run.");
-          router.navigate("/EnterDetails");
+          router.replace("/EnterDetails");
         } else {
-          console.log("App has been launched before. Skipping DB setup.");
-          router.navigate("/Home");
+          router.replace("/Home");
         }
       } catch (error) {
         console.error('Error checking or initializing database:', error);
@@ -24,18 +22,9 @@ export default function Index() {
     };
     setTimeout(() => {
       checkAndInitDatabase();
-    }, 3000);
+    }, 500);
   }, []);
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 20,
-      }}
-    >
-      <Text>This is splash Screen</Text>
-    </View>
+    <SplashScreen />
   );
 }
