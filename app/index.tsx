@@ -1,35 +1,31 @@
-import { Text, View, Dimensions } from "react-native";
-import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
+import { useEffect } from "react";
 import { setupDatabase } from "@/db/dbInit";
-import * as SQLite from "expo-sqlite";
 import { router } from 'expo-router'
-import Button from "@/components/Button";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Index() {
 
   useEffect(() => {
-    const initDatabase = async () => {
-      await setupDatabase();
-      const db = await SQLite.openDatabaseAsync("expenses");
-
-      await db.runAsync(
-        "DELETE FROM userinfo;",
-      );
-
-      await db.runAsync(
-        "INSERT INTO userinfo (id, name) VALUES (?, ?) ON CONFLICT(id) DO NOTHING;",
-        "123e4567-e89b-12d3-a456-426614174000", "Vivek hu vai"
-      );
+    const checkAndInitDatabase = async () => {
+      try {
+        const isFirstRun = await AsyncStorage.getItem('@isFirstRun');
+        if (isFirstRun === null) {
+          await setupDatabase();
+          console.log("Database setup completed on first run.");
+          router.navigate("/EnterDetails");
+        } else {
+          console.log("App has been launched before. Skipping DB setup.");
+          router.navigate("/Home");
+        }
+      } catch (error) {
+        console.error('Error checking or initializing database:', error);
+      }
     };
-
-    initDatabase();
+    setTimeout(() => {
+      checkAndInitDatabase();
+    }, 3000);
   }, []);
-  const goToSetup = () => {
-    router.navigate("/EnterDetails");
-  };
-  const goToHome = () => {
-    router.navigate("/Home");
-  };
   return (
     <View
       style={{
@@ -40,8 +36,6 @@ export default function Index() {
       }}
     >
       <Text>This is splash Screen</Text>
-      <Button title="Go To Setup" onPress={goToSetup} color={'black'} />
-      <Button title="Go To Home" onPress={goToHome} color={'black'} />
     </View>
   );
 }
