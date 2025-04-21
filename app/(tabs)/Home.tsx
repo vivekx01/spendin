@@ -1,21 +1,19 @@
 import { Text, View, Dimensions } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useEffect, useState } from "react";
-import * as SQLite from "expo-sqlite";
 const { width } = Dimensions.get("window");
 import RecentSpends from "@/components/Home/RecentSpends";
 import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
+import { getUserInfo } from "@/db/userInfo";
 
 export default function Home() {
     const [userName, setUserName] = useState("User");
 
     useEffect(() => {
         const getUserData = async () => {
-            const db = await SQLite.openDatabaseAsync("expenses");
-            const user = await db.getFirstAsync<{ name: string }>("SELECT name FROM userinfo");
+            const user = await getUserInfo();
             if (user) setUserName(user.name);
         };
-
         getUserData();
     }, []);
 

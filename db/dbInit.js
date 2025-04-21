@@ -1,4 +1,4 @@
-import * as SQLite from 'expo-sqlite';
+import { getDb } from './db.js';
 
 const TABLES = [
   `CREATE TABLE IF NOT EXISTS accounts (
@@ -41,9 +41,7 @@ const TABLES = [
 
 async function setupDatabase() {
   try {
-    const db = await SQLite.openDatabaseAsync('expenses');
-
-    await db.execAsync('PRAGMA journal_mode = WAL;');
+    const db = await getDb();
 
     for (const query of TABLES) {
       await db.execAsync(query);
