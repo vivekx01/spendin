@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 const { width } = Dimensions.get("window");
 import RecentSpends from "@/components/Home/RecentSpends";
 import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
-import { getUserInfo } from "@/db/userInfo";
+import { getUserInfo } from "@/db";
 
 export default function Home() {
     const [userName, setUserName] = useState("User");

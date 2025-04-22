@@ -1,4 +1,4 @@
-import { getDb } from './db.js';
+import { getDb } from './database.js';
 
 export async function getUserInfo () {
     const db = await getDb();

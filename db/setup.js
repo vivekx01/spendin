@@ -1,4 +1,4 @@
-import { getDb } from './db.js';
+import { getDb } from './database.js';
 
 const TABLES = [
   `CREATE TABLE IF NOT EXISTS accounts (

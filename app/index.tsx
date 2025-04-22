@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { setupDatabase } from "@/db/dbInit";
+import { setupDatabase } from "@/db";
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from "@/components/SplashScreen";
