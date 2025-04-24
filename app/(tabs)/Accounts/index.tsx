@@ -5,7 +5,7 @@ import Button from '@/components/Button'
 const index = () => {
   return (
     <View>
-      <Text>Accounts Tab</Text>
+      <Text>Accounts</Text>
       <Button title="Add Account" onPress={""} color={'black'} />
     </View>
   )
