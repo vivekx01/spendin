@@ -22,19 +22,19 @@ const TabLayout = () => {
           let size = 30;
           let iconName;
           switch (route.name) {
-            case 'Home':
+            case 'Home/index':
               iconName = 'analytics-outline';
               break;
-            case 'SpendHistory':
+            case 'SpendHistory/index':
               iconName = 'swap-vertical-outline';
               break;
             case 'Accounts/index':
               iconName = 'wallet-outline';
               break;
-            case 'Investments':
+            case 'Investments/index':
               iconName = 'trending-up';
               break;
-            case 'AddNewSpend':
+            case 'AddNewSpend/index':
               iconName = 'add-circle-outline';
               break;
             default:
@@ -45,11 +45,11 @@ const TabLayout = () => {
         },
       })}
     >
-      <Tabs.Screen name="Home" options={{ title: "Dashboard" }} />
-      <Tabs.Screen name="SpendHistory" options={{ title: "Spends" }} />
-      <Tabs.Screen name="AddNewSpend" options={{ title: "Add" }} />
+      <Tabs.Screen name="Home/index" options={{ title: "Dashboard" }} />
+      <Tabs.Screen name="SpendHistory/index" options={{ title: "Spends" }} />
+      <Tabs.Screen name="AddNewSpend/index" options={{ title: "Add" }} />
       <Tabs.Screen name="Accounts/index" options={{ title: "Accounts" }} />
-      <Tabs.Screen name="Investments" options={{ title: "Investments" }} />
+      <Tabs.Screen name="Investments/index" options={{ title: "Investments" }} />
     </Tabs>
   );
 };

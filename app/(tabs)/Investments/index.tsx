@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const SpendHistory = () => {
+const index = () => {
   return (
     <View>
-      <Text>SpendHistory</Text>
+      <Text>Investments</Text>
     </View>
   )
 }
 
-export default SpendHistory
+export default index 

@@ -6,7 +6,7 @@ import RecentSpends from "@/components/Home/RecentSpends";
 import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
 import { getUserInfo } from "@/db";
 
-export default function Home() {
+export default function index() {
     const [userName, setUserName] = useState("User");
 
     useEffect(() => {

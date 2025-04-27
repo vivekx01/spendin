@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, TextInput, View, Button, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-const AddNewSpend = () => {
+const index = () => {
   const [number, setNumber] = useState('');
   const [selectedAccount, setSelectedAccount] = useState('');
   const [selectedAllocation, setSelectedAllocation] = useState('');
@@ -135,4 +135,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddNewSpend;
+export default index;
