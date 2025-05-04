@@ -28,14 +28,20 @@ export default function AddNewAccount() {
       setAccountName('');
       setAccountType('Bank');
       setAccountBalance('');
-      router.navigate('/Accounts');
+      navigateBack();
     } else {
       Alert.alert('Failed to save account. Please try again.');
     }
   };
 
+  const navigateBack = () => {
+    router.back(); // Navigate back to the previous screen 
+    
+  }
+
   return (
     <View style={styles.container}>
+      <Button title="Back" onPress={navigateBack} color={'black'} />
       <Text style={styles.label}>Account Name</Text>
       <TextInput
         style={styles.input}

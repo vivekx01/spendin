@@ -1,4 +1,5 @@
-import { View, Text, TextInput, StyleSheet, Alert, Picker, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import Button from '@/components/Button';
 import { getAllAccounts } from '@/db';
@@ -9,7 +10,7 @@ const CreateNewAllocation = () => {
     const [allocationName, setAllocationName] = useState('');
     const [allocationAmount, setAllocationAmount] = useState('');
     const [allocationAccount, setAllocationAccount] = useState('');
-    const [accounts, setAccounts] = useState([]);
+    const [accounts, setAccounts] : any = useState([]);
 
     const fetchAccounts = async () => {
         const accs = await getAllAccounts();
@@ -28,26 +29,27 @@ const CreateNewAllocation = () => {
             Alert.alert('Please fill all fields');
             return;
         }
-
         const isSuccess = await addNewAllocation({
-            allocationAccount,
+            allocationAccountId : allocationAccount,
             allocationName,
             allocationAmount: parseFloat(allocationAmount),
         });
-
         if (isSuccess) {
             Alert.alert('Allocation saved successfully!');
             setAllocationName('');
             setAllocationAmount('');
             if (accounts.length > 0) setAllocationAccount(accounts[0].id);
-            router.navigate('/Allocations'); // Adjust path if needed
+            navigateBack();
         } else {
             Alert.alert('Failed to save allocation. Please try again.');
         }
     };
-
+    const navigateBack = () => {
+        router.back()
+    }
     return (
         <ScrollView contentContainerStyle={styles.container}>
+            <Button title="Back" onPress={navigateBack} color={'black'} />
             <Text style={styles.label}>Allocation Name</Text>
             <TextInput
                 value={allocationName}
@@ -69,7 +71,7 @@ const CreateNewAllocation = () => {
             <View style={styles.pickerWrapper}>
                 <Picker
                     selectedValue={allocationAccount}
-                    onValueChange={(itemValue) => setAllocationAccount(itemValue)}
+                    onValueChange={(itemValue:any) => setAllocationAccount(itemValue)}
                 >
                     {accounts.map((acc: any) => (
                         <Picker.Item

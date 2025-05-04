@@ -46,3 +46,22 @@ export async function deleteAccount(accountId) {
         return false
     }
 }
+
+export async function deleteAccountById(accountId) {
+    try {
+        const db = await getDb();
+
+        await db.runAsync(
+            `
+            DELETE FROM accounts
+            WHERE id = ?
+            `,
+            accountId
+        );
+
+        return true;
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        return false;
+    }
+}
