@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { getAllSpends } from '@/db/spends';
+import { useFocusEffect } from 'expo-router';
 
 // TypeScript type for spend item (matches your getAllSpends result)
 interface Spend {
@@ -18,13 +19,16 @@ interface Spend {
 export default function SpendHistory() {
   const [spends, setSpends] = useState<Spend[]>([]);
 
-  useEffect(() => {
-    const fetchSpends = async () => {
-      const result = await getAllSpends();
-      setSpends(result);
-    };
-    fetchSpends();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSpends = async () => {
+        const result = await getAllSpends();
+        setSpends(result);
+      };
+
+      fetchSpends();
+    }, []) // empty dependency so it re-fetches on every focus
+  );
 
   return (
     <View style={styles.container}>

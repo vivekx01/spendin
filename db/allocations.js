@@ -29,9 +29,6 @@ export async function addNewAllocation({ allocationAccountId, allocationName, al
 
         // Generate UUID for allocation ID
         const id = await Crypto.randomUUID();
-        console.log(allocationAccountId,
-            allocationName,
-            allocationAmount)
         await db.runAsync(
             `
             INSERT INTO allocations (id, allocation_account, allocation_name, allocation_amount)

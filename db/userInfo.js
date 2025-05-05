@@ -14,6 +14,5 @@ export async function setUserInfo (name) {
         "INSERT INTO userinfo (id, name) VALUES (?, ?);",
         userId, name
     );
-    console.log("User info set:", name, userId);
     return userId;
 }

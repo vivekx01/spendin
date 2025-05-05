@@ -75,6 +75,7 @@ const AllocationsList = () => {
                                         onChangeText={setEditedName}
                                         style={styles.input}
                                         placeholder="Allocation Name"
+                                        placeholderTextColor="#999"
                                     />
                                     <TextInput
                                         value={editedAmount}
@@ -82,10 +83,15 @@ const AllocationsList = () => {
                                         style={styles.input}
                                         keyboardType="numeric"
                                         placeholder="Amount"
+                                        placeholderTextColor="#999"
                                     />
                                     <View style={styles.buttonRow}>
-                                        <Button title="Save" onPress={() => handleSave(alloc)} />
-                                        <Button title="Cancel" onPress={cancelEditing} color="gray" />
+                                        <View style={{ flex: 1, marginRight: 8 }}>
+                                            <Button title="Save" onPress={() => handleSave(alloc)} />
+                                        </View>
+                                        <View style={{ flex: 1 }}>
+                                            <Button title="Cancel" onPress={cancelEditing} color="gray" />
+                                        </View>
                                     </View>
                                 </View>
                             ) : (
@@ -126,13 +132,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 4,
-        padding: 8,
-        marginBottom: 8,
+        padding: 10,
+        marginBottom: 10,
+        color: 'black', // 👈 Ensures text is visible
+        fontSize: 16,
     },
     buttonRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 8,
     },
 });
 

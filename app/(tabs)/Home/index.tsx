@@ -1,6 +1,7 @@
 import { Text, View, Dimensions } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from 'expo-router';
 const { width } = Dimensions.get("window");
 import RecentSpends from "@/components/Home/RecentSpends";
 import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
@@ -18,7 +19,7 @@ interface Spend {
     spendNotes: string | null;
     accountName: string | null;
     allocationName: string | null;
-    transactionType: 'Income' | 'Expense';  // <-- Explicit field from DB now
+    transactionType: 'Income' | 'Expense';
 }
 
 export default function Home() {
@@ -27,49 +28,51 @@ export default function Home() {
     const [totalIncome, setTotalIncome] = useState(0);
     const [totalExpense, setTotalExpense] = useState(0);
 
-    useEffect(() => {
-        const loadData = async () => {
-            const user = await getUserInfo();
-            if (user) setUserName(user.name);
+    useFocusEffect(
+        useCallback(() => {
+            const loadData = async () => {
+                const user = await getUserInfo();
+                if (user) setUserName(user.name);
 
-            const spends: Spend[] = await getAllSpends();
+                const spends: Spend[] = await getAllSpends();
 
-            // Sort spends by datetime DESC
-            const sortedSpends = spends.sort((a, b) => b.spendDatetime - a.spendDatetime);
+                // Sort spends by datetime DESC
+                const sortedSpends = spends.sort((a, b) => b.spendDatetime - a.spendDatetime);
 
-            // Set recent 6 spends directly
-            setRecentSpends(sortedSpends.slice(0, 6));
+                // Set recent 6 spends directly
+                setRecentSpends(sortedSpends.slice(0, 6));
 
-            // Filter spends in current month
-            const now = new Date();
-            const currentMonthSpends = sortedSpends.filter((spend) => {
-                const spendDate = new Date(spend.spendDatetime);
-                return (
-                    spendDate.getFullYear() === now.getFullYear() &&
-                    spendDate.getMonth() === now.getMonth()
-                );
-            });
-            // Calculate income & expenses based on transactionType (NOT sign anymore)
-            let income = 0;
-            let expense = 0;
-            currentMonthSpends.forEach((spend) => {
-                if (!spend.transactionType){
-                    console.log("Transaction type not set for spend:", spend);
-                    spend.transactionType = 'Expense'; // Default to Expense if not set
-                }
-                if (spend.transactionType === 'Income') {
-                    income += spend.spendAmount;
-                } else if (spend.transactionType === 'Expense') {
-                    expense += spend.spendAmount;
-                }
-            });
+                // Filter spends in current month
+                const now = new Date();
+                const currentMonthSpends = sortedSpends.filter((spend) => {
+                    const spendDate = new Date(spend.spendDatetime);
+                    return (
+                        spendDate.getFullYear() === now.getFullYear() &&
+                        spendDate.getMonth() === now.getMonth()
+                    );
+                });
 
-            setTotalIncome(income);
-            setTotalExpense(expense);
-        };
+                // Calculate income & expenses based on transactionType
+                let income = 0;
+                let expense = 0;
+                currentMonthSpends.forEach((spend) => {
+                    if (!spend.transactionType) {
+                        spend.transactionType = 'Expense';
+                    }
+                    if (spend.transactionType === 'Income') {
+                        income += spend.spendAmount;
+                    } else if (spend.transactionType === 'Expense') {
+                        expense += spend.spendAmount;
+                    }
+                });
 
-        loadData();
-    }, []);
+                setTotalIncome(income);
+                setTotalExpense(expense);
+            };
+
+            loadData();
+        }, [])
+    );
 
     return (
         <View style={{ flex: 1, alignItems: "center" }}>
@@ -83,7 +86,7 @@ export default function Home() {
                 }}
             >
                 <Text style={{ color: "white", marginTop: 10, fontWeight: "200" }}>
-                    Good Afternoon,
+                    Hello 👋,
                 </Text>
                 <Text style={{ color: "white", marginTop: 10, fontSize: 24, fontWeight: "bold" }}>
                     {userName}

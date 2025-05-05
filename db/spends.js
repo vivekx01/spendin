@@ -16,7 +16,7 @@ export async function addNewSpend({ spendSource, spendCategory, amount, transact
     try {
         const db = await getDb();
         const id = await Crypto.randomUUID();
-
+        
         // Insert into spends table (store amount as positive number)
         await db.runAsync(
             `
@@ -87,6 +87,7 @@ export async function getAllSpends() {
             s.spend_name AS spendName,
             s.spend_notes AS spendNotes,
             a.account_name AS accountName,
+            s.transaction_type AS transactionType,
             al.allocation_name AS allocationName
         FROM spends s
         LEFT JOIN accounts a ON s.spend_source = a.id

@@ -11,6 +11,7 @@ const EnterDetails = () => {
         let user  = await setUserInfo(username);
         if (user) {
             await AsyncStorage.setItem("user", JSON.stringify(user));
+            await AsyncStorage.setItem("@isFirstRun", JSON.stringify("false"));
             router.replace("/Home");
         } else {
             alert("Error inserting user info");
