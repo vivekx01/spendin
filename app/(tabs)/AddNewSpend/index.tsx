@@ -1,44 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, View, Button, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { getAllAccounts } from '@/db';
+import { getAllocationsByAccountId } from '@/db/allocations';
+import { addNewSpend } from '@/db';
 
-const index = () => {
+interface Account {
+  id: string;
+  account_name: string;
+  balance: number;
+}
+
+interface Allocation {
+  id: string;
+  allocation_name: string;
+  allocation_balance: number;
+}
+
+const AddNewSpend = () => {
   const [number, setNumber] = useState('');
-  const [selectedAccount, setSelectedAccount] = useState('');
-  const [selectedAllocation, setSelectedAllocation] = useState('');
-  const [transactionType, setTransactionType] = useState('Expense');
+  const [selectedAccountId, setSelectedAccountId] = useState('');
+  const [selectedAllocationId, setSelectedAllocationId] = useState('');
+  const [transactionType, setTransactionType] = useState<'Expense' | 'Income'>('Expense');
   const [notes, setNotes] = useState('');
+  const [spendName, setSpendName] = useState('Expense'); // Default spend name = transactionType
 
-  // Dummy account data
-  const accounts = [
-    { id: '1', name: 'Savings Account', allocations: ['Bills', 'Groceries', 'Emergency Fund'] },
-    { id: '2', name: 'Credit Card', allocations: [] }, // No allocations
-    { id: '3', name: 'Cash Wallet', allocations: ['Entertainment', 'Dining Out'] },
-  ];
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [allocations, setAllocations] = useState<Allocation[]>([]);
 
-  // Get allocations for the selected account
-  const selectedAccountData = accounts.find(acc => acc.name === selectedAccount);
-  const allocations = selectedAccountData ? selectedAccountData.allocations : [];
+  // Fetch accounts on mount
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      const result = await getAllAccounts();
+      setAccounts(result);
+    };
+    fetchAccounts();
+  }, []);
 
-  const handlePress = () => {
-    console.log('Transaction Type:', transactionType);
-    console.log('Entered Number:', number);
-    console.log('Selected Account:', selectedAccount);
-    console.log('Selected Allocation:', selectedAllocation);
-    console.log('Notes:', notes);
-    
-    Alert.alert('Transaction Added', 
-      `Type: ${transactionType}\nAmount: ${number}\nAccount: ${selectedAccount}\nCategory: ${selectedAllocation || 'None'}\nNotes: ${notes || 'None'}`
-    );
+  // Fetch allocations when account changes
+  useEffect(() => {
+    const fetchAllocations = async () => {
+      if (selectedAccountId) {
+        const result = await getAllocationsByAccountId(selectedAccountId);
+        setAllocations(result);
+      } else {
+        setAllocations([]);
+      }
+    };
+    fetchAllocations();
+  }, [selectedAccountId]);
+
+  // Sync spendName default when transactionType changes
+  useEffect(() => {
+    if (spendName.trim() === '' || spendName === 'Expense' || spendName === 'Income') {
+      setSpendName(transactionType);
+    }
+  }, [transactionType]);
+
+  const handlePress = async () => {
+    // Validate fields
+    if (!number || isNaN(Number(number))) {
+      Alert.alert('Validation Error', 'Please enter a valid amount.');
+      return;
+    }
+    if (!selectedAccountId) {
+      Alert.alert('Validation Error', 'Please select an account.');
+      return;
+    }
+
+    const amount = parseFloat(number);
+    const datetime = Date.now();
+
+    const success = await addNewSpend({
+      spendSource: selectedAccountId,
+      spendCategory: selectedAllocationId || null,
+      amount,
+      transactionType,
+      datetime,
+      name: spendName.trim() || transactionType,  // fallback to transactionType if empty
+      notes,
+    });
+
+    if (success) {
+      const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
+      const selectedAllocation = allocations.find(a => a.id === selectedAllocationId);
+
+      Alert.alert(
+        'Transaction Added',
+        `Type: ${transactionType}\nName: ${spendName.trim() || transactionType}\nAmount: ${amount}\nAccount: ${selectedAccount?.account_name || ''}\nCategory: ${selectedAllocation?.allocation_name || 'None'}\nNotes: ${notes || 'None'}`
+      );
+
+      // Reset form
+      setNumber('');
+      setSelectedAccountId('');
+      setSelectedAllocationId('');
+      setNotes('');
+      setTransactionType('Expense');
+      setSpendName('Expense');
+    } else {
+      Alert.alert('Error', 'Failed to add transaction. Please try again.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Transaction Type Selection */}
+
+      {/* Transaction Type Picker */}
       <View style={styles.pickerWrapper}>
         <Picker
           selectedValue={transactionType}
-          onValueChange={setTransactionType}
+          onValueChange={(value: 'Expense' | 'Income') => {
+            setTransactionType(value);
+          }}
           style={styles.picker}
           mode="dialog"
         >
@@ -46,7 +119,8 @@ const index = () => {
           <Picker.Item label="Income" value="Income" style={styles.pickerItem} />
         </Picker>
       </View>
-      
+
+      {/* Amount Input */}
       <TextInput
         style={styles.input}
         onChangeText={setNumber}
@@ -55,36 +129,44 @@ const index = () => {
         keyboardType="numeric"
       />
 
-      {/* Account Selection */}
+      {/* Spend Name Input */}
+      <TextInput
+        style={styles.input}
+        onChangeText={setSpendName}
+        value={spendName}
+        placeholder="Enter transaction name (optional)"
+      />
+
+      {/* Account Picker */}
       <View style={styles.pickerWrapper}>
         <Picker
-          selectedValue={selectedAccount}
-          onValueChange={(itemValue) => {
-            setSelectedAccount(itemValue);
-            setSelectedAllocation(''); // Reset allocation when account changes
+          selectedValue={selectedAccountId}
+          onValueChange={(itemValue: string) => {
+            setSelectedAccountId(itemValue);
+            setSelectedAllocationId('');
           }}
           style={styles.picker}
           mode="dialog"
         >
           <Picker.Item label="Select Account" value="" style={styles.pickerItem} />
-          {accounts.map((account) => (
-            <Picker.Item key={account.id} label={account.name} value={account.name} style={styles.pickerItem} />
+          {accounts.map(account => (
+            <Picker.Item key={account.id} label={account.account_name} value={account.id} style={styles.pickerItem} />
           ))}
         </Picker>
       </View>
 
-      {/* Allocation Selection (Only Show If Account Has Allocations) */}
+      {/* Allocation Picker */}
       {allocations.length > 0 && (
         <View style={styles.pickerWrapper}>
           <Picker
-            selectedValue={selectedAllocation}
-            onValueChange={setSelectedAllocation}
+            selectedValue={selectedAllocationId}
+            onValueChange={(itemValue: string) => setSelectedAllocationId(itemValue)}
             style={styles.picker}
             mode="dialog"
           >
             <Picker.Item label="Select Allocation Category" value="" style={styles.pickerItem} />
-            {allocations.map((allocation, index) => (
-              <Picker.Item key={index} label={allocation} value={allocation} style={styles.pickerItem} />
+            {allocations.map(alloc => (
+              <Picker.Item key={alloc.id} label={alloc.allocation_name} value={alloc.id} style={styles.pickerItem} />
             ))}
           </Picker>
         </View>
@@ -98,7 +180,7 @@ const index = () => {
         placeholder="Enter any notes (optional)"
       />
 
-      <Button title="Add Spend" onPress={handlePress} color={'black'} />
+      <Button title="Add Transaction" onPress={handlePress} color={'black'} />
     </View>
   );
 };
@@ -135,4 +217,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default index;
+export default AddNewSpend;

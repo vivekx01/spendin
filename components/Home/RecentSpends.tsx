@@ -1,35 +1,38 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import Spend from './Spend'
+import { View } from 'react-native';
+import React from 'react';
+import Spend from './Spend';
 
-const RecentSpends = () => {
-    const transactions = [
-        { type: "expense", name: "Groceries", amount: -500 },
-        { type: "income", name: "Salary", amount: 5000 },
-        { type: "expense", name: "Electricity Bill", amount: -1200 },
-        { type: "income", name: "Freelance", amount: 2000 },
-        { type: "expense", name: "Restaurant", amount: -800 },
-        { type: "expense", name: "Online Shopping", amount: -1500 },
-        { type: "income", name: "Stock Dividend", amount: 700 },
-        { type: "expense", name: "Gym Membership", amount: -600 },
-      ];      
-    return (
-        <View
-            style={{
-                marginTop: 10,
-                height: "90%",
-            }}
-        >
-            {transactions.map((transaction, index) => (
-                <Spend
-                    key={index}
-                    type={transaction.type}
-                    name={transaction.name}
-                    amount={transaction.amount}
-                />
-            ))}
-        </View>
-    )
+// Type definition for spend object (matches getAllSpends)
+interface SpendItem {
+  id: string;
+  spendCategory: string | null;
+  spendSource: string;
+  spendAmount: number;
+  spendDatetime: number;
+  spendName: string;
+  spendNotes: string | null;
+  accountName: string | null;
+  allocationName: string | null;
+  transactionType: 'Income' | 'Expense'; // <-- Added this explicitly
 }
 
-export default RecentSpends
+interface RecentSpendsProps {
+  spends: SpendItem[];
+}
+
+const RecentSpends: React.FC<RecentSpendsProps> = ({ spends }) => {
+  return (
+    <View style={{ marginTop: 10, height: '90%' }}>
+      {spends.map((spend) => (
+        <Spend
+          key={spend.id}
+          type={spend.transactionType.toLowerCase()} // Ensure 'income' | 'expense' (lowercase if Spend component expects lowercase)
+          name={spend.spendName}
+          amount={spend.spendAmount}
+        />
+      ))}
+    </View>
+  );
+};
+
+export default RecentSpends;

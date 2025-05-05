@@ -9,12 +9,11 @@ export async function getUserInfo () {
 
 export async function setUserInfo (name) {
     const db = await getDb();
-    const userId = await Crypto.getRandomUUIDAsync();
-
+    const userId = await Crypto.randomUUID();
     await db.runAsync(
         "INSERT INTO userinfo (id, name) VALUES (?, ?);",
         userId, name
     );
-
+    console.log("User info set:", name, userId);
     return userId;
 }

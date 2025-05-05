@@ -22,6 +22,7 @@ const TABLES = [
     spend_datetime INTEGER NOT NULL,
     spend_name TEXT NOT NULL,
     spend_notes TEXT,
+    transaction_type TEXT NOT NULL DEFAULT 'Expense',
     FOREIGN KEY (spend_category) REFERENCES allocations(id),
     FOREIGN KEY (spend_source) REFERENCES accounts(id)
   );`,

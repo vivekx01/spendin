@@ -2,8 +2,14 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-const Spend = ({ type, name, amount }) => {
-  const isIncome = amount >= 0;
+interface SpendProps {
+  type: 'income' | 'expense'; // We expect lowercase from parent
+  name: string;
+  amount: number;
+}
+
+const Spend: React.FC<SpendProps> = ({ type, name, amount }) => {
+  const isIncome = type === 'income';
 
   return (
     <View style={styles.container}>
@@ -32,8 +38,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 12,
-    // borderBottomWidth: 1,
-    // borderBottomColor: "#ddd",
   },
   name: {
     flex: 1,

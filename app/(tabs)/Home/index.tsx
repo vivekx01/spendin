@@ -5,25 +5,75 @@ const { width } = Dimensions.get("window");
 import RecentSpends from "@/components/Home/RecentSpends";
 import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
 import { getUserInfo } from "@/db";
+import { getAllSpends } from "@/db/spends";
 
-export default function index() {
+// Type for Spend (updated to reflect new schema — has transactionType)
+interface Spend {
+    id: string;
+    spendCategory: string | null;
+    spendSource: string;
+    spendAmount: number;
+    spendDatetime: number;
+    spendName: string;
+    spendNotes: string | null;
+    accountName: string | null;
+    allocationName: string | null;
+    transactionType: 'Income' | 'Expense';  // <-- Explicit field from DB now
+}
+
+export default function Home() {
     const [userName, setUserName] = useState("User");
+    const [recentSpends, setRecentSpends] = useState<Spend[]>([]);
+    const [totalIncome, setTotalIncome] = useState(0);
+    const [totalExpense, setTotalExpense] = useState(0);
 
     useEffect(() => {
-        const getUserData = async () => {
+        const loadData = async () => {
             const user = await getUserInfo();
             if (user) setUserName(user.name);
+
+            const spends: Spend[] = await getAllSpends();
+
+            // Sort spends by datetime DESC
+            const sortedSpends = spends.sort((a, b) => b.spendDatetime - a.spendDatetime);
+
+            // Set recent 6 spends directly
+            setRecentSpends(sortedSpends.slice(0, 6));
+
+            // Filter spends in current month
+            const now = new Date();
+            const currentMonthSpends = sortedSpends.filter((spend) => {
+                const spendDate = new Date(spend.spendDatetime);
+                return (
+                    spendDate.getFullYear() === now.getFullYear() &&
+                    spendDate.getMonth() === now.getMonth()
+                );
+            });
+            // Calculate income & expenses based on transactionType (NOT sign anymore)
+            let income = 0;
+            let expense = 0;
+            currentMonthSpends.forEach((spend) => {
+                if (!spend.transactionType){
+                    console.log("Transaction type not set for spend:", spend);
+                    spend.transactionType = 'Expense'; // Default to Expense if not set
+                }
+                if (spend.transactionType === 'Income') {
+                    income += spend.spendAmount;
+                } else if (spend.transactionType === 'Expense') {
+                    expense += spend.spendAmount;
+                }
+            });
+
+            setTotalIncome(income);
+            setTotalExpense(expense);
         };
-        getUserData();
+
+        loadData();
     }, []);
 
     return (
-        <View
-            style={{
-                flex: 1,
-                alignItems: "center",
-            }}
-        >
+        <View style={{ flex: 1, alignItems: "center" }}>
+            {/* Header */}
             <View
                 style={{
                     padding: 20,
@@ -32,13 +82,23 @@ export default function index() {
                     height: "20%",
                 }}
             >
-                <Text style={{ color: "white", marginTop: 10, fontWeight: "ultralight" }}>Good Afternoon,</Text>
-                <Text style={{ color: "white", marginTop: 10, fontSize: 24, fontWeight: "bold" }}>{userName}</Text>
+                <Text style={{ color: "white", marginTop: 10, fontWeight: "200" }}>
+                    Good Afternoon,
+                </Text>
+                <Text style={{ color: "white", marginTop: 10, fontSize: 24, fontWeight: "bold" }}>
+                    {userName}
+                </Text>
             </View>
+
+            {/* Curved SVG separator */}
             <Svg width={width} height={100} viewBox={`0 0 ${width} 100`} style={{ marginTop: -1 }}>
                 <Path d={`M0,0 Q${width / 2},100 ${width},0`} fill="black" />
             </Svg>
-            <TotalBalanceCard />
+
+            {/* Total balance + Income/Expense */}
+            <TotalBalanceCard totalIncome={totalIncome} totalExpense={totalExpense} />
+
+            {/* Transactions */}
             <View
                 style={{
                     width: "90%",
@@ -47,15 +107,18 @@ export default function index() {
                     paddingHorizontal: 5,
                 }}
             >
-                <View style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "100%",
-                }}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "100%",
+                    }}
+                >
                     <Text style={{ fontSize: 18, fontWeight: "600" }}>Transactions History</Text>
                     <Text style={{ fontSize: 14, fontWeight: "600", color: "#aaa" }}>See all</Text>
                 </View>
-                <RecentSpends />
+
+                <RecentSpends spends={recentSpends} />
             </View>
         </View>
     );

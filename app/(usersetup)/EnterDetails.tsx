@@ -42,7 +42,8 @@ const EnterDetails = () => {
                     width: '80%',
                 }}
             />
-            <Button title="Confirm" onPress={insertUserInfo} color={'black'} />
+            <Button title="Confirm" onPress={() => { insertUserInfo(); }} color={'black'} />
+
         </View>
     )
 }
