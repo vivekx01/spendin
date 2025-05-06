@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import Button from '@/components/Button';
 import { getAllocationsByAccountId, updateAllocation } from '@/db/allocations';
-
+import roundOff from '@/utilities';
 const AllocationsList = () => {
     const { accountId, accountName } = useLocalSearchParams<{ accountId: string; accountName: string }>();
     const [allocations, setAllocations] = useState<any[]>([]);
@@ -98,7 +98,7 @@ const AllocationsList = () => {
                                 <>
                                     <View style={styles.row}>
                                         <Text style={styles.allocName}>{alloc.allocation_name}</Text>
-                                        <Text style={styles.allocAmount}>₹ {alloc.allocation_amount}</Text>
+                                        <Text style={styles.allocAmount}>₹ {roundOff(alloc.allocation_amount)}</Text>
                                     </View>
                                     <Button title="Edit" onPress={() => startEditing(alloc)} />
                                 </>

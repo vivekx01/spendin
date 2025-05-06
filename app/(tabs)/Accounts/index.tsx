@@ -3,6 +3,7 @@ import React, { useCallback } from 'react';
 import Button from '@/components/Button';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
+import roundOff from '@/utilities';
 
 const index = () => {
   const [accounts, setAccounts] = React.useState([]);
@@ -74,7 +75,7 @@ const index = () => {
             <View key={account.id} style={styles.row}>
               <Text style={styles.cell}>{account.account_name}</Text>
               <Text style={styles.cell}>{account.account_type}</Text>
-              <Text style={styles.cell}>{account.account_balance}</Text>
+              <Text style={styles.cell}>{roundOff(account.account_balance)}</Text>
               <View style={[styles.cell, { padding: 3 }]}>
                 <View style={styles.buttonColumn}>
                   <Button
@@ -83,7 +84,6 @@ const index = () => {
                   />
                   <Button
                     title="Delete"
-                    color="red"
                     onPress={() => handleDeleteAccount(account.id)}
                   />
                 </View>

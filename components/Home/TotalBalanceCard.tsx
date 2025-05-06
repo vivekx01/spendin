@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import React from 'react';
+import roundOff from '@/utilities';
 
 interface TotalBalanceCardProps {
     totalIncome: number;
@@ -28,19 +29,19 @@ const TotalBalanceCard: React.FC<TotalBalanceCardProps> = ({ totalIncome, totalE
             }}
         >
             <Text style={{ fontSize: 16, fontWeight: '600', marginTop: 4 }}>Total spends this month</Text>
-            <Text style={{ fontSize: 32, fontWeight: '600' }}>₹{Math.abs(netBalance)}</Text>
+            <Text style={{ fontSize: 32, fontWeight: '600' }}>₹{roundOff(Math.abs(netBalance))}</Text>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
                 <View>
                     <Text style={{ fontSize: 16, fontWeight: '500' }}>Income</Text>
                     <Text style={{ fontSize: 24, fontWeight: '500', marginTop: 4, color: 'green' }}>
-                        ₹{totalIncome}
+                        ₹{roundOff(totalIncome)}
                     </Text>
                 </View>
                 <View>
                     <Text style={{ fontSize: 16, fontWeight: '500' }}>Expenses</Text>
                     <Text style={{ fontSize: 24, fontWeight: '500', marginTop: 4, color: 'red' }}>
-                        ₹{totalExpense}
+                        ₹{roundOff(totalExpense)}
                     </Text>
                 </View>
             </View>

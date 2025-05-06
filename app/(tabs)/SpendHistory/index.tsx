@@ -3,7 +3,6 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { getAllSpends } from '@/db/spends';
 import { useFocusEffect } from 'expo-router';
 
-// TypeScript type for spend item (matches your getAllSpends result)
 interface Spend {
   id: string;
   spendCategory: string | null;
@@ -19,29 +18,50 @@ interface Spend {
 export default function SpendHistory() {
   const [spends, setSpends] = useState<Spend[]>([]);
 
+  // Helper to check if spend is in current month
+  const isCurrentMonth = (timestamp: number) => {
+    const spendDate = new Date(timestamp);
+    const now = new Date();
+    return (
+      spendDate.getFullYear() === now.getFullYear() &&
+      spendDate.getMonth() === now.getMonth()
+    );
+  };
+
+  // Helper to format date as dd-mm-yy
+  const formatDate = (timestamp: number) => {
+    const d = new Date(timestamp);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = String(d.getFullYear()).slice(-2);
+    return `${day}-${month}-${year}`;
+  };
+
   useFocusEffect(
     useCallback(() => {
       const fetchSpends = async () => {
         const result = await getAllSpends();
-        setSpends(result);
+        // Filter spends for current month only
+        const currentMonthSpends = result.filter(spend => isCurrentMonth(spend.spendDatetime));
+        setSpends(currentMonthSpends);
       };
 
       fetchSpends();
-    }, []) // empty dependency so it re-fetches on every focus
+    }, [])
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Transaction History</Text>
+      <Text style={styles.header}>This Month's Transactions</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {spends.length === 0 ? (
-          <Text style={styles.noData}>No transactions found.</Text>
+          <Text style={styles.noData}>No transactions found for this month.</Text>
         ) : (
           spends.map((spend) => (
             <View key={spend.id} style={styles.spendItem}>
               <Text style={styles.amount}>₹ {spend.spendAmount}</Text>
               <Text style={styles.meta}>
-                {spend.spendName} • {new Date(spend.spendDatetime).toLocaleDateString()}
+                {spend.spendName} • {formatDate(spend.spendDatetime)}
               </Text>
               <Text style={styles.details}>
                 Account: {spend.accountName || 'Unknown'}

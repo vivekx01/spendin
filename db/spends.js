@@ -63,7 +63,7 @@ export async function addNewSpend({ spendSource, spendCategory, amount, transact
         return true;
     } catch (error) {
         console.error('Error adding new spend:', error);
-        return false;
+        return error;
     }
 }
 

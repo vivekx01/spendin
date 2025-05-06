@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, TextInput, View, Button, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { useFocusEffect } from '@react-navigation/native';
 import { getAllAccounts } from '@/db';
 import { getAllocationsByAccountId } from '@/db/allocations';
 import { addNewSpend } from '@/db';
@@ -23,42 +24,47 @@ const AddNewSpend = () => {
   const [selectedAllocationId, setSelectedAllocationId] = useState('');
   const [transactionType, setTransactionType] = useState<'Expense' | 'Income'>('Expense');
   const [notes, setNotes] = useState('');
-  const [spendName, setSpendName] = useState('Expense'); // Default spend name = transactionType
+  const [spendName, setSpendName] = useState('Expense');
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [allocations, setAllocations] = useState<Allocation[]>([]);
 
-  // Fetch accounts on mount
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      const result = await getAllAccounts();
-      setAccounts(result);
-    };
-    fetchAccounts();
-  }, []);
+  // Fetch accounts on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      const fetchAccounts = async () => {
+        const result = await getAllAccounts();
+        setAccounts(result);
+      };
+      fetchAccounts();
+    }, [])
+  );
 
-  // Fetch allocations when account changes
-  useEffect(() => {
-    const fetchAllocations = async () => {
-      if (selectedAccountId) {
-        const result = await getAllocationsByAccountId(selectedAccountId);
-        setAllocations(result);
-      } else {
-        setAllocations([]);
+  // Fetch allocations when selectedAccountId changes (and screen is focused)
+  useFocusEffect(
+    useCallback(() => {
+      const fetchAllocations = async () => {
+        if (selectedAccountId) {
+          const result = await getAllocationsByAccountId(selectedAccountId);
+          setAllocations(result);
+        } else {
+          setAllocations([]);
+        }
+      };
+      fetchAllocations();
+    }, [selectedAccountId])
+  );
+
+  // Sync spendName default when transactionType changes (and screen is focused)
+  useFocusEffect(
+    useCallback(() => {
+      if (spendName.trim() === '' || spendName === 'Expense' || spendName === 'Income') {
+        setSpendName(transactionType);
       }
-    };
-    fetchAllocations();
-  }, [selectedAccountId]);
-
-  // Sync spendName default when transactionType changes
-  useEffect(() => {
-    if (spendName.trim() === '' || spendName === 'Expense' || spendName === 'Income') {
-      setSpendName(transactionType);
-    }
-  }, [transactionType]);
+    }, [transactionType])
+  );
 
   const handlePress = async () => {
-    // Validate fields
     if (!number || isNaN(Number(number))) {
       Alert.alert('Validation Error', 'Please enter a valid amount.');
       return;
@@ -77,7 +83,7 @@ const AddNewSpend = () => {
       amount,
       transactionType,
       datetime,
-      name: spendName.trim() || transactionType,  // fallback to transactionType if empty
+      name: spendName.trim() || transactionType,
       notes,
     });
 
@@ -104,14 +110,10 @@ const AddNewSpend = () => {
 
   return (
     <View style={styles.container}>
-
-      {/* Transaction Type Picker */}
       <View style={styles.pickerWrapper}>
         <Picker
           selectedValue={transactionType}
-          onValueChange={(value: 'Expense' | 'Income') => {
-            setTransactionType(value);
-          }}
+          onValueChange={(value: 'Expense' | 'Income') => setTransactionType(value)}
           style={styles.picker}
           mode="dialog"
         >
@@ -120,7 +122,6 @@ const AddNewSpend = () => {
         </Picker>
       </View>
 
-      {/* Amount Input */}
       <TextInput
         style={styles.input}
         onChangeText={setNumber}
@@ -129,7 +130,6 @@ const AddNewSpend = () => {
         keyboardType="numeric"
       />
 
-      {/* Spend Name Input */}
       <TextInput
         style={styles.input}
         onChangeText={setSpendName}
@@ -137,7 +137,6 @@ const AddNewSpend = () => {
         placeholder="Enter transaction name (optional)"
       />
 
-      {/* Account Picker */}
       <View style={styles.pickerWrapper}>
         <Picker
           selectedValue={selectedAccountId}
@@ -155,7 +154,6 @@ const AddNewSpend = () => {
         </Picker>
       </View>
 
-      {/* Allocation Picker */}
       {allocations.length > 0 && (
         <View style={styles.pickerWrapper}>
           <Picker
@@ -172,7 +170,6 @@ const AddNewSpend = () => {
         </View>
       )}
 
-      {/* Notes Input */}
       <TextInput
         style={styles.input}
         onChangeText={setNotes}

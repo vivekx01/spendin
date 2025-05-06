@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import React from 'react';
 import Spend from './Spend';
+import roundOff from '@/utilities';
 
 // Type definition for spend object (matches getAllSpends)
 interface SpendItem {
@@ -28,7 +29,7 @@ const RecentSpends: React.FC<RecentSpendsProps> = ({ spends }) => {
           key={spend.id}
           type={spend.transactionType.toLowerCase()} // Ensure 'income' | 'expense' (lowercase if Spend component expects lowercase)
           name={spend.spendName}
-          amount={spend.spendAmount}
+          amount={roundOff(spend.spendAmount)}
         />
       ))}
     </View>
