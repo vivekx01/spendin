@@ -87,7 +87,7 @@ const AddNewSpend = () => {
       notes,
     });
 
-    if (success) {
+    if (success === true) {
       const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
       const selectedAllocation = allocations.find(a => a.id === selectedAllocationId);
 
@@ -104,7 +104,7 @@ const AddNewSpend = () => {
       setTransactionType('Expense');
       setSpendName('Expense');
     } else {
-      Alert.alert('Error', 'Failed to add transaction. Please try again.');
+      Alert.alert('Error', 'Failed to add transaction. Error: ' + success);
     }
   };
 
