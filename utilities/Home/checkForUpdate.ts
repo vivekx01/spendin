@@ -12,7 +12,6 @@ export async function checkForUpdate(): Promise<ReleaseInfo | null> {
 
         const latestVersion = data.tag_name;
         const currentVersion = Application.nativeApplicationVersion;
-        console.log('Current version:', currentVersion);
         const asset = data.assets.find((a: any) => a.name.endsWith('.apk'));
 
         if (!asset) {

@@ -1,4 +1,4 @@
-import { Text, View, Dimensions } from "react-native";
+import { Text, View, Dimensions, Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useState, useCallback } from "react";
 import { router, useFocusEffect } from 'expo-router';
@@ -7,8 +7,7 @@ import RecentSpends from "@/components/Home/RecentSpends";
 import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
 import { getUserInfo } from "@/db";
 import { getAllSpends } from "@/db/spends";
-import Button from "@/components/Button";
-
+import { Ionicons } from '@expo/vector-icons';
 // Type for Spend (updated to reflect new schema — has transactionType)
 interface Spend {
     id: string;
@@ -75,7 +74,8 @@ export default function Home() {
         }, [])
     );
     const navigateToUpdate = () => {
-        router.navigate('/Home/UpdateChecker');
+        console.log("Navigating to UpdateChecker");
+        router.navigate('/Home/Profile');
     }
     return (
         <View style={{ flex: 1, alignItems: "center" }}>
@@ -85,9 +85,15 @@ export default function Home() {
                     padding: 20,
                     backgroundColor: "black",
                     width: "100%",
-                    height: "20%",
+                    height: "18%",
                 }}
-            >
+            >   
+                <Pressable
+                    style={{ position: "absolute", right: 16, top: 30, width: 60 }}
+                    onPress={navigateToUpdate}
+                >
+                    <Ionicons name={"person-circle"} size={55} color={"white"} />
+                </Pressable>  
                 <Text style={{ color: "white", marginTop: 10, fontWeight: "200" }}>
                     Hello 👋,
                 </Text>
@@ -95,7 +101,7 @@ export default function Home() {
                     {userName}
                 </Text>
             </View>
-
+            
             {/* Curved SVG separator */}
             <Svg width={width} height={100} viewBox={`0 0 ${width} 100`} style={{ marginTop: -1 }}>
                 <Path d={`M0,0 Q${width / 2},100 ${width},0`} fill="black" />
@@ -125,7 +131,6 @@ export default function Home() {
                 </View>
 
                 <RecentSpends spends={recentSpends} />
-                <Button title="App Updates" onPress={navigateToUpdate} />
             </View>
         </View>
     );
