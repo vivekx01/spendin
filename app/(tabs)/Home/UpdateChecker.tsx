@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Button, Alert } from 'react-native';
-import { checkForUpdate, downloadAndPromptInstallWithProgress } from '@/utilities';
-import { DownloadUpdateModal } from '@/components/Home/DownloadUpdateModal';
+import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 
 export default function UpdateChecker() {
     const [downloading, setDownloading] = useState(false);
@@ -16,7 +15,7 @@ export default function UpdateChecker() {
                 `Version ${updateInfo.version} is available.\nDo you want to download and install it?`,
                 [
                     { text: 'Cancel', style: 'cancel' },
-                    { text: 'Update', onPress: () => startDownload(updateInfo.downloadUrl) },
+                    { text: 'Update', onPress: () => openDownloadUrlInBrowser(updateInfo.downloadUrl) },
                 ]
             );
         } else {
@@ -24,24 +23,11 @@ export default function UpdateChecker() {
         }
     };
 
-    const startDownload = async (downloadUrl: string) => {
-        setDownloading(true);
-        setProgress(0);
-
-        try {
-            await downloadAndPromptInstallWithProgress(downloadUrl, 'update.apk', (p) => setProgress(p));
-            Alert.alert('Download complete', 'Installer is ready!');
-        } catch (err) {
-            Alert.alert('Error', 'Failed to download update.');
-        } finally {
-            setDownloading(false);
-        }
-    };
+    
 
     return (
         <View>
             <Button title="Check for Updates" onPress={handleCheckUpdate} />
-            <DownloadUpdateModal visible={downloading} progress={progress} />
         </View>
     );
 }
