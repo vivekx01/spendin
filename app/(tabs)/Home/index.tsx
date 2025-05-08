@@ -1,12 +1,13 @@
 import { Text, View, Dimensions } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useState, useCallback } from "react";
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 const { width } = Dimensions.get("window");
 import RecentSpends from "@/components/Home/RecentSpends";
 import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
 import { getUserInfo } from "@/db";
 import { getAllSpends } from "@/db/spends";
+import Button from "@/components/Button";
 
 // Type for Spend (updated to reflect new schema — has transactionType)
 interface Spend {
@@ -73,7 +74,9 @@ export default function Home() {
             loadData();
         }, [])
     );
-
+    const navigateToUpdate = () => {
+        router.navigate('/Home/UpdateChecker');
+    }
     return (
         <View style={{ flex: 1, alignItems: "center" }}>
             {/* Header */}
@@ -122,6 +125,7 @@ export default function Home() {
                 </View>
 
                 <RecentSpends spends={recentSpends} />
+                <Button title="App Updates" onPress={navigateToUpdate} />
             </View>
         </View>
     );
