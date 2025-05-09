@@ -73,9 +73,8 @@ export default function Home() {
             loadData();
         }, [])
     );
-    const navigateToUpdate = () => {
-        console.log("Navigating to UpdateChecker");
-        router.navigate('/Home/Profile');
+    const navigateToProfile = () => {
+        router.push('/Home/Profile');
     }
     return (
         <View style={{ flex: 1, alignItems: "center" }}>
@@ -89,11 +88,12 @@ export default function Home() {
                 }}
             >   
                 <Pressable
-                    style={{ position: "absolute", right: 16, top: 30, width: 60 }}
-                    onPress={navigateToUpdate}
+                    style={{ position: "absolute", right: 16, top: 30, width: 60, height: 60, justifyContent: 'center', alignItems: 'center' }}
+                    onPress={navigateToProfile}
+                    hitSlop={10}   // 👈 adds 10px padding around touch area
                 >
                     <Ionicons name={"person-circle"} size={55} color={"white"} />
-                </Pressable>  
+                </Pressable>
                 <Text style={{ color: "white", marginTop: 10, fontWeight: "200" }}>
                     Hello 👋,
                 </Text>
