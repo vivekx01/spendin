@@ -1,4 +1,4 @@
-import { Text, View, Dimensions, Pressable } from "react-native";
+import { Text, View, Dimensions, TouchableOpacity } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useState, useCallback } from "react";
 import { router, useFocusEffect } from 'expo-router';
@@ -87,13 +87,13 @@ export default function Home() {
                     height: "18%",
                 }}
             >   
-                <Pressable
+                <TouchableOpacity
                     style={{ position: "absolute", right: 16, top: 30, width: 60, height: 60, justifyContent: 'center', alignItems: 'center' }}
                     onPress={navigateToProfile}
                     hitSlop={10}   // 👈 adds 10px padding around touch area
                 >
                     <Ionicons name={"person-circle"} size={55} color={"white"} />
-                </Pressable>
+                </TouchableOpacity>
                 <Text style={{ color: "white", marginTop: 10, fontWeight: "200" }}>
                     Hello 👋,
                 </Text>
