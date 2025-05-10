@@ -16,10 +16,10 @@ const index = () => {
     router.navigate('/Accounts/CreateNewAllocation');
   };
 
-  const navigateToAllocations = (accountId: string, accountName: string) => {
+  const navigateToAllocations = (accountId: string, accountName: string, accountBalance: number) => {
     router.navigate({
       pathname: '/Accounts/AllocationsList',
-      params: { accountId, accountName },   // Pass params to next screen
+      params: { accountId, accountName, accountBalance },   // Pass params to next screen
     });
   };
 
@@ -80,7 +80,7 @@ const index = () => {
                 <View style={styles.buttonColumn}>
                   <Button
                     title="View"
-                    onPress={() => navigateToAllocations(account.id, account.account_name)}
+                    onPress={() => navigateToAllocations(account.id, account.account_name, roundOff(account.account_balance))}
                   />
                   <Button
                     title="Delete"

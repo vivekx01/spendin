@@ -162,7 +162,7 @@ const AddNewSpend = () => {
             style={styles.picker}
             mode="dialog"
           >
-            <Picker.Item label="Select Allocation Category" value="" style={styles.pickerItem} />
+            <Picker.Item label="Select Allocation Category (Optional)" value="" style={styles.pickerItem} />
             {allocations.map(alloc => (
               <Picker.Item key={alloc.id} label={alloc.allocation_name} value={alloc.id} style={styles.pickerItem} />
             ))}

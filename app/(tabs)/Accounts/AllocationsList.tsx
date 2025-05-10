@@ -5,9 +5,10 @@ import Button from '@/components/Button';
 import { getAllocationsByAccountId, updateAllocation } from '@/db/allocations';
 import roundOff from '@/utilities';
 const AllocationsList = () => {
-    const { accountId, accountName } = useLocalSearchParams<{ accountId: string; accountName: string }>();
+    const { accountId, accountName, accountBalance } = useLocalSearchParams<{ accountId: string; accountName: string, accountBalance: string }>();
     const [allocations, setAllocations] = useState<any[]>([]);
-
+    let [balance, setBalance] = useState(Number(accountBalance));
+    console.log(balance);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editedName, setEditedName] = useState('');
     const [editedAmount, setEditedAmount] = useState('');
@@ -64,51 +65,65 @@ const AllocationsList = () => {
             <Button title="Back" onPress={navigateBack} color="black" />
             <Text style={styles.title}>Allocations for {accountName}</Text>
 
-            {allocations.length > 0 ? (
-                <View style={styles.allocList}>
-                    {allocations.map((alloc: any) => (
-                        <View key={alloc.id} style={styles.allocItem}>
-                            {editingId === alloc.id ? (
-                                <View style={{ flex: 1 }}>
-                                    <TextInput
-                                        value={editedName}
-                                        onChangeText={setEditedName}
-                                        style={styles.input}
-                                        placeholder="Allocation Name"
-                                        placeholderTextColor="#999"
-                                    />
-                                    <TextInput
-                                        value={editedAmount}
-                                        onChangeText={setEditedAmount}
-                                        style={styles.input}
-                                        keyboardType="numeric"
-                                        placeholder="Amount"
-                                        placeholderTextColor="#999"
-                                    />
-                                    <View style={styles.buttonRow}>
-                                        <View style={{ flex: 1, marginRight: 8 }}>
-                                            <Button title="Save" onPress={() => handleSave(alloc)} />
-                                        </View>
-                                        <View style={{ flex: 1 }}>
-                                            <Button title="Cancel" onPress={cancelEditing} color="gray" />
+
+            <View style={styles.allocList}>
+                {
+                    allocations.map((alloc: any) => {
+                        balance -= alloc.allocation_amount;
+                        return (
+                            <View key={alloc.id} style={styles.allocItem}>
+                                {editingId === alloc.id ? (
+                                    <View style={{ flex: 1 }}>
+                                        <TextInput
+                                            value={editedName}
+                                            onChangeText={setEditedName}
+                                            style={styles.input}
+                                            placeholder="Allocation Name"
+                                            placeholderTextColor="#999"
+                                        />
+                                        <TextInput
+                                            value={editedAmount}
+                                            onChangeText={setEditedAmount}
+                                            style={styles.input}
+                                            keyboardType="numeric"
+                                            placeholder="Amount"
+                                            placeholderTextColor="#999"
+                                        />
+                                        <View style={styles.buttonRow}>
+                                            <View style={{ flex: 1, marginRight: 8 }}>
+                                                <Button title="Save" onPress={() => handleSave(alloc)} />
+                                            </View>
+                                            <View style={{ flex: 1 }}>
+                                                <Button title="Cancel" onPress={cancelEditing} color="gray" />
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            ) : (
-                                <>
-                                    <View style={styles.row}>
-                                        <Text style={styles.allocName}>{alloc.allocation_name}</Text>
-                                        <Text style={styles.allocAmount}>₹ {roundOff(alloc.allocation_amount)}</Text>
-                                    </View>
-                                    <Button title="Edit" onPress={() => startEditing(alloc)} />
-                                </>
-                            )}
-                        </View>
-                    ))}
-                </View>
-            ) : (
-                <Text style={styles.noAllocText}>No allocations found</Text>
-            )}
+                                ) : (
+                                    <>
+                                        <View style={styles.row}>
+                                            <Text style={styles.allocName}>{alloc.allocation_name}</Text>
+                                            <Text style={styles.allocAmount}>₹ {roundOff(alloc.allocation_amount)}</Text>
+                                        </View>
+                                        <Button title="Edit" onPress={() => startEditing(alloc)} />
+                                    </>
+                                )}
+                            </View>
+                        );
+                    })
+                }
+                {balance > 1 && (
+                    <View style={styles.allocItem}>
+                        <>
+                            <View style={styles.row}>
+                                <Text style={styles.allocName}>Others</Text>
+                                <Text style={styles.allocAmount}>₹ {balance}</Text>
+                            </View>
+                        </>
+                    </View>
+                )}
+            </View>
+
+
         </View>
     );
 };
