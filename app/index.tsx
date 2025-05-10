@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { setupDatabase } from "@/db";
+import { migrateDb, setupDatabase } from "@/db";
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from "@/components/SplashScreen";
@@ -14,15 +14,14 @@ export default function Index() {
           await setupDatabase();
           router.replace("/EnterDetails");
         } else {
+          await migrateDb();
           router.replace("/Home");
         }
       } catch (error) {
         console.error('Error checking or initializing database:', error);
       }
     };
-    setTimeout(() => {
-      checkAndInitDatabase();
-    }, 500);
+    checkAndInitDatabase();
   }, []);
   return (
     <SplashScreen />
