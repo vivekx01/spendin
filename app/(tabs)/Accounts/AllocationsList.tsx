@@ -8,7 +8,6 @@ const AllocationsList = () => {
     const { accountId, accountName, accountBalance } = useLocalSearchParams<{ accountId: string; accountName: string, accountBalance: string }>();
     const [allocations, setAllocations] = useState<any[]>([]);
     let [balance, setBalance] = useState(Number(accountBalance));
-    console.log(balance);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editedName, setEditedName] = useState('');
     const [editedAmount, setEditedAmount] = useState('');
