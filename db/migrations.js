@@ -1,9 +1,9 @@
-import * as SQLite from 'expo-sqlite';
+import { getDb } from "./database";
 
 export async function migrateDb() {
-    const db = await SQLite.openDatabaseAsync('expenses');
+    const db = await getDb();
 
-    // ---- Define all migrations here ----
+    // ---- Defined all migrations here ----
     const migrations = [
         {
             toVersion: 1,

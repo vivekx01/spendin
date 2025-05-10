@@ -1,5 +1,6 @@
 import { getDb } from './database.js';
 
+const DB_VERSION = 1;
 const TABLES = [
   `CREATE TABLE IF NOT EXISTS accounts (
     id TEXT PRIMARY KEY,
@@ -16,7 +17,7 @@ const TABLES = [
   );`,
   `CREATE TABLE IF NOT EXISTS spends (
     id TEXT PRIMARY KEY,
-    spend_category TEXT NOT NULL,
+    spend_category TEXT,
     spend_source TEXT NOT NULL,
     spend_amount REAL NOT NULL,
     spend_datetime INTEGER NOT NULL,
@@ -47,6 +48,9 @@ async function setupDatabase() {
     for (const query of TABLES) {
       await db.execAsync(query);
     }
+
+    // Set the database version
+    await db.runAsync(`PRAGMA user_version = ${DB_VERSION};`);
 
     console.log('Database initialized successfully');
   } catch (error) {
