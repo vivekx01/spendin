@@ -42,6 +42,19 @@ export async function migrateDb() {
                 `);
             },
         },
+        {
+            toVersion: 2,
+            migrate: async () => {
+                await db.execAsync(`
+                    CREATE TABLE IF NOT EXISTS error_logs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        error_message TEXT NOT NULL,
+                        error_stack TEXT,
+                        timestamp INTEGER NOT NULL
+                    );
+                `);
+            },
+        },
     ];
 
     // --- Helpers ---

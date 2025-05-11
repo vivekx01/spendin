@@ -1,6 +1,7 @@
 import { getDb } from './database.js';
+import { logError } from './errorlogs.js';
 
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const TABLES = [
   `CREATE TABLE IF NOT EXISTS accounts (
     id TEXT PRIMARY KEY,
@@ -38,6 +39,12 @@ const TABLES = [
   `CREATE TABLE IF NOT EXISTS userinfo (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL
+  );`,
+  `CREATE TABLE IF NOT EXISTS error_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    error_message TEXT NOT NULL,
+    error_stack TEXT,
+    timestamp INTEGER NOT NULL
   );`
 ];
 
@@ -54,7 +61,7 @@ async function setupDatabase() {
 
     console.log('Database initialized successfully');
   } catch (error) {
-    console.error('Error initializing database:', error);
+    logError(error.message, error.stack);
   }
 }
 

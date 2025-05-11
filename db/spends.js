@@ -1,5 +1,6 @@
 import { getDb } from './database';
 import * as Crypto from 'expo-crypto';
+import { logError } from './errorlogs';
 
 /**
  * Add a new spend + update account and allocation balances
@@ -62,7 +63,7 @@ export async function addNewSpend({ spendSource, spendCategory, amount, transact
 
         return true;
     } catch (error) {
-        console.error('Error adding new spend:', error);
+        logError(error.message, error.stack);
         return error;
     }
 }
@@ -98,7 +99,7 @@ export async function getAllSpends() {
 
         return result;
     } catch (error) {
-        console.error('Error fetching transaction history:', error);
+        logError(error.message, error.stack);
         return [];
     }
 }

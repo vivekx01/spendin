@@ -2,6 +2,7 @@
 
 import { getDb } from './database';
 import * as Crypto from 'expo-crypto';
+import { logError } from './errorlogs';
 
 export async function getAllocationsByAccountId(accountId) {
     try {
@@ -18,7 +19,7 @@ export async function getAllocationsByAccountId(accountId) {
 
         return results; // returns array of matching allocations
     } catch (error) {
-        console.error('Error fetching allocations for account:', error);
+        logError(error.message, error.stack);
         return []; // empty array if something fails
     }
 }
@@ -42,7 +43,7 @@ export async function addNewAllocation({ allocationAccountId, allocationName, al
 
         return true;
     } catch (error) {
-        console.error('Error adding new allocation:', error);
+        logError(error.message, error.stack);
         return false;
     }
 }
@@ -65,7 +66,7 @@ export async function updateAllocation({ allocationId, allocationAccountId, allo
 
         return true;
     } catch (error) {
-        console.error('Error updating allocation:', error);
+        logError(error.message, error.stack);
         return false;
     }
 }

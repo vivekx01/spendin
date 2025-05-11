@@ -1,3 +1,4 @@
+import { logError } from '@/db';
 import * as Application from 'expo-application';
 
 interface ReleaseInfo {
@@ -28,7 +29,8 @@ export async function checkForUpdate(): Promise<ReleaseInfo | null> {
             return null;  // No update needed
         }
     } catch (error) {
-        console.error('Failed to check for update', error);
+        const e = error as Error;
+        logError(e.message, e.stack);
         return null;
     }
 }

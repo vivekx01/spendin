@@ -7,3 +7,4 @@ export * from './spends';
 export * from './presets';
 export * from './investments';
 export * from './migrations';
+export * from './errorlogs';

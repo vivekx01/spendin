@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Button, Text, Modal, Pressable, StyleSheet } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
+import { exportLogs } from '@/utilities/Home/exportLogs';
 
 export default function Profile() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
@@ -32,6 +33,7 @@ export default function Profile() {
         <View style={styles.container}>
             <Button title="Back" onPress={navigateBack} color="black" />
             <Button title="Check for Updates" onPress={handleCheckUpdate} color="black" />
+            <Button title="Share Error logs" onPress={exportLogs} color="black" />
 
             <Modal
                 visible={modalVisible}

@@ -1,6 +1,7 @@
 // db/accounts.js
 import { getDb } from './database.js';
 import * as Crypto from 'expo-crypto';
+import { logError } from './errorlogs.js';
 
 export async function addNewAccount({ accountName, accountType, accountBalance }) {
     try {
@@ -20,7 +21,7 @@ export async function addNewAccount({ accountName, accountType, accountBalance }
 
         return true;
     } catch (error) {
-        console.error('Failed to add new account:', error)
+        logError(error.message, error.stack);
         return false
     }
 }
@@ -42,7 +43,7 @@ export async function deleteAccount(accountId) {
         )
         return true;
     } catch (error) {
-        console.error('Failed to delete account:', error)
+        logError(error.message, error.stack);
         return false
     }
 }
@@ -61,7 +62,7 @@ export async function deleteAccountById(accountId) {
 
         return true;
     } catch (error) {
-        console.error('Error deleting account:', error);
+        logError(error.message, error.stack);
         return false;
     }
 }
