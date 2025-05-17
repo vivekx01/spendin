@@ -3,7 +3,7 @@ import { View, Button, Text, Modal, Pressable, StyleSheet } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
 import { exportLogs } from '@/utilities/Home/exportLogs';
-
+import { exportAllData, pickAndImportDataFromFile } from '@/db';
 export default function Profile() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -34,6 +34,8 @@ export default function Profile() {
             <Button title="Back" onPress={navigateBack} color="black" />
             <Button title="Check for Updates" onPress={handleCheckUpdate} color="black" />
             <Button title="Share Error logs" onPress={exportLogs} color="black" />
+            <Button title="Create backup" onPress={exportAllData} color="black" />
+            <Button title="Restore from a backup" onPress={pickAndImportDataFromFile} color="black" />
 
             <Modal
                 visible={modalVisible}
