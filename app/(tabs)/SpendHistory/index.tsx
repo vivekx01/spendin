@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { getAllSpends } from '@/db/spends';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { deleteSpend, getAllSpends } from '@/db/spends';
 import { useFocusEffect } from 'expo-router';
+import EditSpendModal from '@/components/SpendHistory/EditSpend';
 
 interface Spend {
   id: string;
@@ -13,12 +14,15 @@ interface Spend {
   spendNotes: string | null;
   accountName: string | null;
   allocationName: string | null;
+  transactionType: string;
+  spendCategoryName: string | null;
 }
 
 export default function SpendHistory() {
   const [spends, setSpends] = useState<Spend[]>([]);
+  const [selectedSpend, setSelectedSpend] = useState<Spend | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // Helper to check if spend is in current month
   const isCurrentMonth = (timestamp: number) => {
     const spendDate = new Date(timestamp);
     const now = new Date();
@@ -28,27 +32,35 @@ export default function SpendHistory() {
     );
   };
 
-  // Helper to format date as dd-mm-yy
   const formatDate = (timestamp: number) => {
     const d = new Date(timestamp);
     const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = String(d.getFullYear()).slice(-2);
     return `${day}-${month}-${year}`;
   };
 
+  const fetchSpends = async () => {
+    const result = await getAllSpends();
+    const currentMonthSpends = result.filter(spend => isCurrentMonth(spend.spendDatetime));
+    setSpends(currentMonthSpends);
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const fetchSpends = async () => {
-        const result = await getAllSpends();
-        // Filter spends for current month only
-        const currentMonthSpends = result.filter(spend => isCurrentMonth(spend.spendDatetime));
-        setSpends(currentMonthSpends);
-      };
-
       fetchSpends();
     }, [])
   );
+
+  const handleDeleteSpend = async (spendId: string) => {
+    const isSuccess = await deleteSpend(spendId);
+    if (isSuccess) {
+      setSpends(prevSpends => prevSpends.filter(spend => spend.id !== spendId));
+      Alert.alert('Success', 'Spend deleted successfully');
+    } else {
+      Alert.alert('Error', 'Failed to delete spend');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -67,15 +79,46 @@ export default function SpendHistory() {
                 Account: {spend.accountName || 'Unknown'}
               </Text>
               <Text style={styles.details}>
-                Category: {spend.allocationName || 'None'}
+                Category: {spend.spendCategoryName || 'None'}
               </Text>
               {spend.spendNotes ? (
                 <Text style={styles.notes}>Notes: {spend.spendNotes}</Text>
               ) : null}
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedSpend(spend);
+                  setShowModal(true);
+                }}
+              >
+                <Text style={styles.editText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  handleDeleteSpend(spend.id);
+                }}
+              >
+                <Text style={styles.editText}>Delete</Text>
+              </TouchableOpacity>
             </View>
           ))
         )}
       </ScrollView>
+
+      {showModal && selectedSpend && (
+        <EditSpendModal
+          visible={showModal}
+          spend={selectedSpend}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedSpend(null);
+          }}
+          onUpdated={() => {
+            setShowModal(false);
+            setSelectedSpend(null);
+            fetchSpends(); // refresh list
+          }}
+        />
+      )}
     </View>
   );
 }
@@ -125,5 +168,11 @@ const styles = StyleSheet.create({
     color: '#777',
     marginTop: 4,
     fontStyle: 'italic',
+  },
+  editText: {
+    color: '#007bff',
+    marginTop: 8,
+    fontSize: 13,
+    fontWeight: 'bold',
   },
 });

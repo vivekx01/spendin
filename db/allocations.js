@@ -70,3 +70,38 @@ export async function updateAllocation({ allocationId, allocationAccountId, allo
         return false;
     }
 }
+
+export async function deleteAllocation(allocationId) {
+    try {
+        const db = await getDb();
+
+        // Step 1: Get allocation details
+        const allocation = await db.getAllAsync(
+            `SELECT allocation_amount, allocation_account FROM allocations WHERE id = ?`,
+            allocationId
+        );
+
+        if (!allocation) {
+            throw new Error(`Allocation with ID ${allocationId} not found`);
+        }
+
+        const { allocation_amount, allocation_account } = allocation;
+
+        // Step 2: Update account balance
+        await db.runAsync(
+            `UPDATE accounts SET account_balance = account_balance + ? WHERE id = ?`,
+            [allocation_amount, allocation_account]
+        );
+
+        // Step 3: Delete the allocation
+        await db.runAsync(
+            `DELETE FROM allocations WHERE id = ?`,
+            allocationId
+        );
+
+        return true;
+    } catch (error) {
+        logError(error.message, error.stack);
+        return false;
+    }
+}
