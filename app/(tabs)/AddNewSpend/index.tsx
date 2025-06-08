@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { getAllAccounts } from '@/db';
 import { getAllocationsByAccountId } from '@/db/allocations';
 import { addNewSpend } from '@/db';
+import { router } from 'expo-router';
 
 interface Account {
   id: string;
@@ -108,6 +109,10 @@ const AddNewSpend = () => {
     }
   };
 
+  const navigateToSelfTransfer = () => {
+    router.push("/AddNewSpend/SelfTransfer");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.pickerWrapper}>
@@ -176,8 +181,16 @@ const AddNewSpend = () => {
         value={notes}
         placeholder="Enter any notes (optional)"
       />
-
-      <Button title="Add Transaction" onPress={handlePress} color={'black'} />
+      <View
+        style={{
+          marginTop: 8,
+          gap: 8,
+          width: '100%',
+        }}
+      >
+        <Button title="Add Transaction" onPress={handlePress} color={'black'} />
+        <Button title="Self Transfer" onPress={navigateToSelfTransfer} color={'black'} />
+      </View>
     </View>
   );
 };

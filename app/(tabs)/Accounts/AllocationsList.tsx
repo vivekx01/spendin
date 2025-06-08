@@ -82,8 +82,16 @@ const AllocationsList = () => {
                             <Text style={styles.allocName}>{alloc.allocation_name}</Text>
                             <Text style={styles.allocAmount}>₹ {roundOff(alloc.allocation_amount)}</Text>
                         </View>
-                        <Button title="Edit" onPress={() => startEditing(alloc)} />
-                        <Button title="Delete" onPress={() => handleDelete(alloc.id)} />
+                        <View
+                            style={{
+                                marginTop: 8,
+                                gap: 8,
+                                width: '100%',
+                            }}
+                        >
+                            <Button title="Edit" onPress={() => startEditing(alloc)} />
+                            <Button title="Delete" onPress={() => handleDelete(alloc.id)} />
+                        </View>
                     </View>
                 ))}
 
