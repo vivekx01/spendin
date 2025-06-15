@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TextInput, Alert } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useLocalSearchParams, router, useFocusEffect } from 'expo-router';
 import Button from '@/components/Button';
@@ -71,7 +71,7 @@ const AllocationsList = () => {
 
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <Button title="Back" onPress={navigateBack} color="black" />
             <Text style={styles.title}>Allocations for {accountName}</Text>
 
@@ -104,12 +104,12 @@ const AllocationsList = () => {
                     </View>
                 )}
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { padding: 16 },
+    container: { paddingHorizontal: 16 },
     title: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
     allocList: { marginTop: 8 },
     allocItem: {

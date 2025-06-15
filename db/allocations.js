@@ -48,10 +48,28 @@ export async function addNewAllocation({ allocationAccountId, allocationName, al
     }
 }
 
-export async function updateAllocation({ allocationId, allocationAccountId, allocationName, allocationAmount }) {
+export async function updateAllocation({
+    allocationId,
+    allocationAccountId,
+    allocationName,
+    allocationAmount,
+}) {
     try {
         const db = await getDb();
 
+        // Step 1: Get the old allocation amount
+        const existing = await db.getFirstAsync(
+            `SELECT allocation_amount FROM allocations WHERE id = ?`,
+            allocationId
+        );
+
+        if (!existing) throw new Error('Allocation not found');
+
+        const oldAmount = existing.allocation_amount;
+        const newAmount = allocationAmount;
+        const delta = newAmount - oldAmount;
+
+        // Step 2: Update the allocation
         await db.runAsync(
             `
             UPDATE allocations
@@ -60,9 +78,22 @@ export async function updateAllocation({ allocationId, allocationAccountId, allo
             `,
             allocationAccountId,
             allocationName,
-            allocationAmount,
+            newAmount,
             allocationId
         );
+
+        // Step 3: Update the account balance
+        if (delta !== 0) {
+            await db.runAsync(
+                `
+                UPDATE accounts
+                SET account_balance = account_balance + ?
+                WHERE id = ?
+                `,
+                delta,
+                allocationAccountId
+            );
+        }
 
         return true;
     } catch (error) {
