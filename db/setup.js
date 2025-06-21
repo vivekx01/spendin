@@ -1,13 +1,14 @@
 import { getDb } from './database.js';
 import { logError } from './errorlogs.js';
 
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const TABLES = [
   `CREATE TABLE IF NOT EXISTS accounts (
     id TEXT PRIMARY KEY,
     account_type TEXT CHECK(account_type IN ('Bank', 'Credit')) NOT NULL,
     account_name TEXT NOT NULL,
-    account_balance REAL NOT NULL
+    account_balance REAL NOT NULL,
+    credit_limit REAL
   );`,
   `CREATE TABLE IF NOT EXISTS allocations (
     id TEXT PRIMARY KEY,

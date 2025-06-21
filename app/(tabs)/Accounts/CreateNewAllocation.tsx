@@ -10,13 +10,14 @@ const CreateNewAllocation = () => {
     const [allocationName, setAllocationName] = useState('');
     const [allocationAmount, setAllocationAmount] = useState('');
     const [allocationAccount, setAllocationAccount] = useState('');
-    const [accounts, setAccounts] : any = useState([]);
+    const [bankAccounts, setBankAccounts] = useState<any[]>([]);
 
     const fetchAccounts = async () => {
-        const accs = await getAllAccounts();
-        setAccounts(accs);
-        if (accs.length > 0 && !allocationAccount) {
-            setAllocationAccount(accs[0].id); // Default to first account
+        const allAccounts = await getAllAccounts();
+        const filtered = allAccounts.filter((acc: any) => acc.account_type === 'Bank');
+        setBankAccounts(filtered);
+        if (filtered.length > 0 && !allocationAccount) {
+            setAllocationAccount(filtered[0].id);
         }
     };
 
@@ -29,61 +30,76 @@ const CreateNewAllocation = () => {
             Alert.alert('Please fill all fields');
             return;
         }
+
         const isSuccess = await addNewAllocation({
-            allocationAccountId : allocationAccount,
+            allocationAccountId: allocationAccount,
             allocationName,
             allocationAmount: parseFloat(allocationAmount),
         });
+
         if (isSuccess) {
             Alert.alert('Allocation saved successfully!');
             setAllocationName('');
             setAllocationAmount('');
-            if (accounts.length > 0) setAllocationAccount(accounts[0].id);
+            if (bankAccounts.length > 0) setAllocationAccount(bankAccounts[0].id);
             navigateBack();
         } else {
             Alert.alert('Failed to save allocation. Please try again.');
         }
     };
+
     const navigateBack = () => {
-        router.back()
-    }
+        router.back();
+    };
+
+    const noBankAccounts = bankAccounts.length === 0;
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Button title="Back" onPress={navigateBack} color={'black'} />
-            <Text style={styles.label}>Allocation Name</Text>
-            <TextInput
-                value={allocationName}
-                onChangeText={setAllocationName}
-                placeholder="Enter allocation name"
-                style={styles.input}
-            />
 
-            <Text style={styles.label}>Allocation Amount</Text>
-            <TextInput
-                value={allocationAmount}
-                onChangeText={setAllocationAmount}
-                placeholder="Enter allocation amount"
-                keyboardType="numeric"
-                style={styles.input}
-            />
+            {noBankAccounts ? (
+                <Text style={{ marginTop: 20, fontSize: 16, color: 'red' }}>
+                    Allocations can only be created for bank-type accounts. No bank accounts found.
+                </Text>
+            ) : (
+                <>
+                    <Text style={styles.label}>Allocation Name</Text>
+                    <TextInput
+                        value={allocationName}
+                        onChangeText={setAllocationName}
+                        placeholder="Enter allocation name"
+                        style={styles.input}
+                    />
 
-            <Text style={styles.label}>Select Account</Text>
-            <View style={styles.pickerWrapper}>
-                <Picker
-                    selectedValue={allocationAccount}
-                    onValueChange={(itemValue:any) => setAllocationAccount(itemValue)}
-                >
-                    {accounts.map((acc: any) => (
-                        <Picker.Item
-                            label={`${acc.account_name} (${acc.account_type})`}
-                            value={acc.id}
-                            key={acc.id}
-                        />
-                    ))}
-                </Picker>
-            </View>
+                    <Text style={styles.label}>Allocation Amount</Text>
+                    <TextInput
+                        value={allocationAmount}
+                        onChangeText={setAllocationAmount}
+                        placeholder="Enter allocation amount"
+                        keyboardType="numeric"
+                        style={styles.input}
+                    />
 
-            <Button title="Save Allocation" onPress={handleSave} />
+                    <Text style={styles.label}>Select Account</Text>
+                    <View style={styles.pickerWrapper}>
+                        <Picker
+                            selectedValue={allocationAccount}
+                            onValueChange={(itemValue: any) => setAllocationAccount(itemValue)}
+                        >
+                            {bankAccounts.map((acc: any) => (
+                                <Picker.Item
+                                    label={`${acc.account_name}`}
+                                    value={acc.id}
+                                    key={acc.id}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+
+                    <Button title="Save Allocation" onPress={handleSave} />
+                </>
+            )}
         </ScrollView>
     );
 };

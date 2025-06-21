@@ -13,7 +13,7 @@ import { logError } from './errorlogs';
  * @param {string} param0.name - spend name
  * @param {string} [param0.notes] - optional notes
  */
-export async function addNewSpend({ spendSource, spendCategory, amount, transactionType, datetime, name, notes }) {
+export async function addNewSpend({ spendSource, spendCategory, amount, accountType , transactionType, datetime, name, notes }) {
     try {
         const db = await getDb();
         const id = await Crypto.randomUUID();
@@ -34,8 +34,14 @@ export async function addNewSpend({ spendSource, spendCategory, amount, transact
             transactionType
         );
 
+        let signedAmount;
+
         // Apply sign only for balance updates
-        const signedAmount = transactionType === 'Expense' ? -amount : amount;
+        if (accountType === 'Bank') {
+            signedAmount = transactionType === 'Expense' ? -amount : amount;
+        } else if (accountType === 'Credit') {
+            signedAmount = transactionType === 'Expense' ? amount : -amount;
+        }
 
         // Update account balance
         await db.runAsync(

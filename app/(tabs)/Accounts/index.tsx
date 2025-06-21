@@ -16,10 +16,15 @@ const index = () => {
     router.navigate('/Accounts/CreateNewAllocation');
   };
 
-  const navigateToAllocations = (accountId: string, accountName: string, accountBalance: number) => {
+  const navigateToAllocations = (
+    accountId: string,
+    accountName: string,
+    accountBalance: number,
+    accountType: string
+  ) => {
     router.navigate({
       pathname: '/Accounts/AllocationsList',
-      params: { accountId, accountName, accountBalance },   // Pass params to next screen
+      params: { accountId, accountName, accountBalance, accountType },
     });
   };
 
@@ -29,25 +34,21 @@ const index = () => {
   };
 
   const handleDeleteAccount = async (accountId: string) => {
-    Alert.alert(
-      'Confirm Delete',
-      'Are you sure you want to delete this account?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            const success = await deleteAccountById(accountId);
-            if (success) {
-              fetchAccounts(); // Refresh list
-            } else {
-              Alert.alert('Error', 'Failed to delete account');
-            }
-          },
+    Alert.alert('Confirm Delete', 'Are you sure you want to delete this account?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          const success = await deleteAccountById(accountId);
+          if (success) {
+            fetchAccounts(); // Refresh list
+          } else {
+            Alert.alert('Error', 'Failed to delete account');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   useFocusEffect(
@@ -71,25 +72,43 @@ const index = () => {
           </View>
 
           {/* Table Rows */}
-          {accounts.map((account: any) => (
-            <View key={account.id} style={styles.row}>
-              <Text style={styles.cell}>{account.account_name}</Text>
-              <Text style={styles.cell}>{account.account_type}</Text>
-              <Text style={styles.cell}>{roundOff(account.account_balance)}</Text>
-              <View style={[styles.cell, { padding: 3 }]}>
-                <View style={styles.buttonColumn}>
-                  <Button
-                    title="View"
-                    onPress={() => navigateToAllocations(account.id, account.account_name, roundOff(account.account_balance))}
-                  />
-                  <Button
-                    title="Delete"
-                    onPress={() => handleDeleteAccount(account.id)}
-                  />
+          {accounts.map((account: any) => {
+            const isCredit = account.account_type === 'Credit';
+            const availableCredit = isCredit
+              ? account.credit_limit - account.account_balance
+              : 0;
+
+            return (
+              <View key={account.id} style={styles.row}>
+                <Text style={styles.cell}>{account.account_name}</Text>
+                <Text style={styles.cell}>{account.account_type}</Text>
+                <Text style={styles.cell}>
+                  {isCredit
+                    ? `₹ ${roundOff(availableCredit)}`
+                    : `₹ ${roundOff(account.account_balance)}`}
+                </Text>
+                <View style={[styles.cell, { padding: 3 }]}>
+                  <View style={styles.buttonColumn}>
+                    <Button
+                      title="View"
+                      onPress={() =>
+                        navigateToAllocations(
+                          account.id,
+                          account.account_name,
+                          account.account_balance,
+                          account.account_type
+                        )
+                      }
+                    />
+                    <Button
+                      title="Delete"
+                      onPress={() => handleDeleteAccount(account.id)}
+                    />
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
       ) : (
         <Text>No accounts found</Text>

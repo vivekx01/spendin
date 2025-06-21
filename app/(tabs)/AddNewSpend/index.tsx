@@ -11,6 +11,8 @@ interface Account {
   id: string;
   account_name: string;
   balance: number;
+  account_type: 'Bank' | 'Credit';
+  credit_limit?: number | null;
 }
 
 interface Allocation {
@@ -30,7 +32,6 @@ const AddNewSpend = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [allocations, setAllocations] = useState<Allocation[]>([]);
 
-  // Fetch accounts on screen focus
   useFocusEffect(
     useCallback(() => {
       const fetchAccounts = async () => {
@@ -41,7 +42,6 @@ const AddNewSpend = () => {
     }, [])
   );
 
-  // Fetch allocations when selectedAccountId changes (and screen is focused)
   useFocusEffect(
     useCallback(() => {
       const fetchAllocations = async () => {
@@ -56,7 +56,6 @@ const AddNewSpend = () => {
     }, [selectedAccountId])
   );
 
-  // Sync spendName default when transactionType changes (and screen is focused)
   useFocusEffect(
     useCallback(() => {
       if (spendName.trim() === '' || spendName === 'Expense' || spendName === 'Income') {
@@ -78,10 +77,17 @@ const AddNewSpend = () => {
     const amount = parseFloat(number);
     const datetime = Date.now();
 
+    const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
+    if (!selectedAccount) {
+      Alert.alert('Error', 'Selected account not found.');
+      return;
+    }
+
     const success = await addNewSpend({
       spendSource: selectedAccountId,
       spendCategory: selectedAllocationId || null,
       amount,
+      accountType : selectedAccount.account_type,
       transactionType,
       datetime,
       name: spendName.trim() || transactionType,
@@ -89,12 +95,11 @@ const AddNewSpend = () => {
     });
 
     if (success === true) {
-      const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
       const selectedAllocation = allocations.find(a => a.id === selectedAllocationId);
 
       Alert.alert(
         'Transaction Added',
-        `Type: ${transactionType}\nName: ${spendName.trim() || transactionType}\nAmount: ${amount}\nAccount: ${selectedAccount?.account_name || ''}\nCategory: ${selectedAllocation?.allocation_name || 'None'}\nNotes: ${notes || 'None'}`
+        `Type: ${transactionType}\nName: ${spendName.trim() || transactionType}\nAmount: ${amount}\nAccount: ${selectedAccount.account_name}\nCategory: ${selectedAllocation?.allocation_name || 'None'}\nNotes: ${notes || 'None'}`
       );
 
       // Reset form

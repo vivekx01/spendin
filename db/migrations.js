@@ -55,6 +55,14 @@ export async function migrateDb() {
                 `);
             },
         },
+        {
+            toVersion: 3,
+            migrate: async () => {
+                await db.execAsync(`
+                    ALTER TABLE accounts ADD COLUMN credit_limit REAL;
+                `);
+            },
+        }
     ];
 
     // --- Helpers ---
