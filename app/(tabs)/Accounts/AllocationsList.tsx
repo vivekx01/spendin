@@ -86,7 +86,7 @@ const AllocationsList = () => {
 
             {accountType === 'Credit' && (
                 <Text style={styles.creditNote}>
-                    Credit account – allocations represent what you owe across categories.
+                    Credit account – Outstanding dues will be shown for such accounts.
                 </Text>
             )}
 
