@@ -86,21 +86,25 @@ const SelfTransfer = () => {
         }
 
         const now = Date.now();
-
+        const fromAccountType = accounts.find(acc => acc.id === fromAccountId)?.account_type;
         const debit = await addNewSpend({
             spendSource: fromAccountId,
             spendCategory: fromAllocationId || null,
             amount: amt,
+            accountType: fromAccountType,
             transactionType: 'Expense',
             datetime: now,
             name: 'Self Transfer - Out',
             notes,
         });
 
+        const ToaccountType = accounts.find(acc => acc.id === toAccountId)?.account_type;
+
         const credit = await addNewSpend({
             spendSource: toAccountId,
             spendCategory: toAllocationId || null,
             amount: amt,
+            accountType: ToaccountType,
             transactionType: 'Income',
             datetime: now,
             name: 'Self Transfer - In',
