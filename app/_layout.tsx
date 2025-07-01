@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 export default function RootLayout() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar backgroundColor="black" style="light"></StatusBar>
+      <StatusBar backgroundColor="white" style="dark"></StatusBar>
       <Stack screenOptions={{headerShown: false}}>
         <Stack.Screen name="(tabs)" />
       </Stack>

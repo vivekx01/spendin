@@ -1,31 +1,37 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Svg, { Path } from "react-native-svg";
+import ArrowDownIcon from "../ArrowDownIcon";
+import ArrowUpIcon from "../ArrowUpIcon";
 
 interface SpendProps {
-  type: 'income' | 'expense'; // We expect lowercase from parent
+  type: string; // We expect lowercase from parent
   name: string;
   amount: number;
+  account: string,
+  allocation: string | null;
 }
 
-const Spend: React.FC<SpendProps> = ({ type, name, amount }) => {
+const Spend: React.FC<SpendProps> = ({ type, name, amount, account, allocation }) => {
   const isIncome = type === 'income';
 
   return (
     <View style={styles.container}>
-      {/* Transaction Type Icon */}
-      <Svg width={24} height={24} viewBox="0 0 24 24">
-        <Path
-          d="M12 2L15 8H9L12 2ZM12 22L9 16H15L12 22ZM2 12L8 15V9L2 12ZM22 12L16 9V15L22 12Z"
-          fill={isIncome ? "green" : "red"}
-        />
-      </Svg>
+      {isIncome ? (
+        // Arrow Down
+        <ArrowDownIcon></ArrowDownIcon>
+      ) : (
+        // Arrow Up
+        <ArrowUpIcon></ArrowUpIcon>
+      )}
 
       {/* Transaction Name */}
-      <Text style={styles.name}>{name}</Text>
+      <View style={{flex: 1,}}>
+        <Text style={styles.name}>{allocation ? allocation : `Others - ${account}`} </Text>
+        <Text style={styles.category}>{name}</Text>
+      </View>
 
       {/* Transaction Amount */}
-      <Text style={[styles.amount, { color: isIncome ? "green" : "red" }]}>
+      <Text style={[styles.amount, { color: "black" }]}>
         {isIncome ? "+ " : "- "}₹{Math.abs(amount)}
       </Text>
     </View>
@@ -40,7 +46,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   name: {
-    flex: 1,
     marginLeft: 10,
     fontSize: 16,
   },
@@ -48,6 +53,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  category: {
+    fontSize: 12,
+    marginLeft: 10
+  }
 });
 
 export default Spend;

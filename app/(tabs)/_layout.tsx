@@ -7,29 +7,29 @@ const TabLayout = () => {
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: 'white',
+        tabBarActiveTintColor: 'gray',
         tabBarInactiveTintColor: 'gray',
         tabBarPressOpacity: 0.6,
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         tabBarStyle: {
-          height: 60,
-          backgroundColor: 'black',
+          height: 65,
+          backgroundColor: 'white',
         },
         tabBarItemStyle: { justifyContent: 'center' },
-        tabBarLabelStyle: { fontSize: 14, color: 'white', fontWeight: 'normal' },
+        tabBarLabelStyle: { fontSize: 10, color: '#555', fontWeight: '400', marginTop: 5 },
         tabBarIconStyle: { marginTop: 5 },
         tabBarIcon: ({ color }) => {
           let size = 30;
           let iconName;
           switch (route.name) {
             case 'Home':
-              iconName = 'analytics-outline';
+              iconName = 'analytics';
               break;
             case 'SpendHistory':
               iconName = 'swap-vertical-outline';
               break;
             case 'Accounts':
-              iconName = 'wallet-outline';
+              iconName = 'card';
               break;
             case 'Investments':
               iconName = 'trending-up';
@@ -45,9 +45,9 @@ const TabLayout = () => {
         },
       })}
     >
-      <Tabs.Screen name="Home" options={{ title: "Dashboard" }} />
-      <Tabs.Screen name="SpendHistory" options={{ title: "Spends" }} />
-      <Tabs.Screen name="AddNewSpend" options={{ title: "Add" }} />
+      <Tabs.Screen name="Home" options={{ title: "Overview" }} />
+      <Tabs.Screen name="SpendHistory" options={{ title: "Transactions" }} />
+      <Tabs.Screen name="AddNewSpend" options={{ title: "Add New" }} />
       <Tabs.Screen name="Accounts" options={{ title: "Accounts" }} />
       <Tabs.Screen name="Investments" options={{ title: "Investments" }} />
     </Tabs>

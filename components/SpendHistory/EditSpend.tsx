@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { updateSpend } from '@/db';
+import { deleteSpend, updateSpend } from '@/db';
 import { getAllAccounts } from '@/db/accounts';
 import { getAllocationsByAccountId } from '@/db/allocations';
 
-export default function EditSpendModal({ visible, spend, onClose, onUpdated }) {
+export default function EditSpendModal({ visible, spend, onClose, onUpdated, setSpends }) {
     const [name, setName] = useState(spend.spendName);
     const [amount, setAmount] = useState(spend.spendAmount.toString());
     const [notes, setNotes] = useState(spend.spendNotes || '');
@@ -25,9 +25,7 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated }) {
 
             const loadData = async () => {
                 const accs = await getAllAccounts();
-                console.log('Accounts:', accs);
                 const cats = await getAllocationsByAccountId(spend.spendSourceId);
-                console.log('Categories:', cats);
                 setAccounts(accs);
                 setCategories(cats);
             };
@@ -50,6 +48,16 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated }) {
         if (success) onUpdated();
         else alert('Failed to update spend');
     };
+
+    const handleDeleteSpend = async (spendId: string) => {
+        const isSuccess = await deleteSpend(spendId);
+        if (isSuccess) {
+            setSpends(prevSpends => prevSpends.filter(spend => spend.id !== spendId));
+            Alert.alert('Success', 'Spend deleted successfully');
+        } else {
+            Alert.alert('Error', 'Failed to delete spend');
+        }
+    }
 
     return (
         <Modal visible={visible} animationType="slide" transparent>
@@ -88,7 +96,7 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated }) {
                         ))}
                     </Picker>
 
-                    
+
                     {categories.length > 0 && (
                         <>
                             <Text style={styles.label}>Category</Text>
@@ -100,7 +108,7 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated }) {
                                 {categories.map((cat) => (
                                     <Picker.Item key={cat.id} label={cat.allocation_name} value={cat.id} />
                                 ))}
-                                    <Picker.Item key="0" label="Others" value="" />
+                                <Picker.Item key="0" label="Others" value="" />
 
                             </Picker>
                         </>
@@ -114,15 +122,23 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated }) {
                             <Text style={styles.buttonText}>Save</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            onPress={onClose}
+                            onPress={() => {
+                                handleDeleteSpend(spend.id);
+                            }}
                             style={[styles.button, { backgroundColor: '#f44336' }]}
                         >
-                            <Text style={styles.buttonText}>Cancel</Text>
+                            <Text style={styles.buttonText}>Delete</Text>
                         </TouchableOpacity>
-                    </View>
+                        <TouchableOpacity
+                            onPress={onClose}
+                            style={[styles.button, { backgroundColor: '#f0f2f4' }]}
+                        >
+                            <Text style={{color: 'black'}}>Cancel</Text>
+                        </TouchableOpacity>
                 </View>
             </View>
-        </Modal>
+        </View>
+        </Modal >
     );
 }
 

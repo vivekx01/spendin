@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import React, { useCallback } from 'react';
 import Button from '@/components/Button';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
 import roundOff from '@/utilities';
+import Account from '@/components/Accounts/Account';
 
 const index = () => {
   const [accounts, setAccounts] = React.useState([]);
@@ -58,19 +59,12 @@ const index = () => {
   );
 
   return (
-    <ScrollView>
+    <View style={{backgroundColor:'white', padding: 16}}>
       <Text style={styles.title}>Accounts</Text>
-
+      <Text style={{fontSize: 22, fontWeight: '700', marginTop: 20}}>Your accounts</Text>
       {accounts.length > 0 ? (
-        <View style={styles.table}>
-          {/* Table Header */}
-          <View style={[styles.row, styles.headerRow]}>
-            <Text style={[styles.cell, styles.headerCell]}>Name</Text>
-            <Text style={[styles.cell, styles.headerCell]}>Type</Text>
-            <Text style={[styles.cell, styles.headerCell]}>Balance</Text>
-            <Text style={[styles.cell, styles.headerCell]}>Actions</Text>
-          </View>
-
+        <ScrollView style={styles.table}>
+          
           {/* Table Rows */}
           {accounts.map((account: any) => {
             const isCredit = account.account_type === 'Credit';
@@ -79,54 +73,36 @@ const index = () => {
               : 0;
 
             return (
-              <View key={account.id} style={styles.row}>
-                <Text style={styles.cell}>{account.account_name}</Text>
-                <Text style={styles.cell}>{account.account_type}</Text>
-                <Text style={styles.cell}>
-                  {isCredit
-                    ? `₹ ${roundOff(availableCredit)}`
-                    : `₹ ${roundOff(account.account_balance)}`}
-                </Text>
-                <View style={[styles.cell, { padding: 3 }]}>
-                  <View style={styles.buttonColumn}>
-                    <Button
-                      title="View"
-                      onPress={() =>
-                        navigateToAllocations(
-                          account.id,
-                          account.account_name,
-                          account.account_balance,
-                          account.account_type
-                        )
-                      }
-                    />
-                    <Button
-                      title="Delete"
-                      onPress={() => handleDeleteAccount(account.id)}
-                    />
-                  </View>
-                </View>
-              </View>
+              <TouchableOpacity 
+                key={account.id}
+                onPress={() =>
+                navigateToAllocations(
+                  account.id,
+                  account.account_name,
+                  account.account_balance,
+                  account.account_type
+                )}>
+                <Account account_name={account.account_name} account_type={account.account_type} account_balance={account.account_type === 'Credit' ? availableCredit : account.account_balance}></Account>
+              </TouchableOpacity>
+              
             );
           })}
-        </View>
+        </ScrollView>
       ) : (
         <Text>No accounts found</Text>
       )}
-
       <View style={styles.buttonContainer}>
         <Button title="Add Account" onPress={navigateToAddNewAccount} />
-        <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} />
+        {/* <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} /> */}
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  title: { fontSize: 20, fontWeight: 'bold', marginTop: 16, textAlign: 'center' },
-  table: { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, marginTop: 16 },
-  row: { flexDirection: 'row', borderBottomWidth: 1, borderColor: '#ccc' },
-  headerRow: { backgroundColor: '#f0f0f0' },
+  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor:'white' },
+  table: {marginTop: 10, backgroundColor:'white', height: '78%' },
+  row: { flexDirection: 'row'},
   cell: { flex: 1, padding: 8, textAlign: 'center' },
   headerCell: { fontWeight: 'bold' },
   buttonContainer: { marginTop: 16, padding: 16, gap: 16 },

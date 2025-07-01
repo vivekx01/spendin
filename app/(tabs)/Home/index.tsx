@@ -1,13 +1,13 @@
 import { Text, View, Dimensions, TouchableOpacity } from "react-native";
-import Svg, { Path } from "react-native-svg";
 import { useState, useCallback } from "react";
 import { router, useFocusEffect } from 'expo-router';
-const { width } = Dimensions.get("window");
-import RecentSpends from "@/components/Home/RecentSpends";
-import TotalBalanceCard from "@/components/Home/TotalBalanceCard";
+import Networth from "@/components/Home/Networth";
 import { getUserInfo } from "@/db";
 import { getAllSpends } from "@/db/spends";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons  } from '@expo/vector-icons';
+import SpendThisMonth from "@/components/Home/SpendThisMonth";
+import RecentSpends from "@/components/Home/RecentSpends";
+
 // Type for Spend (updated to reflect new schema — has transactionType)
 interface Spend {
     id: string;
@@ -17,17 +17,15 @@ interface Spend {
     spendDatetime: number;
     spendName: string;
     spendNotes: string | null;
-    accountName: string | null;
+    accountName: string;
     allocationName: string | null;
-    transactionType: 'Income' | 'Expense';
+    transactionType: string;
 }
 
 export default function Home() {
     const [userName, setUserName] = useState("User");
     const [recentSpends, setRecentSpends] = useState<Spend[]>([]);
-    const [totalIncome, setTotalIncome] = useState(0);
-    const [totalExpense, setTotalExpense] = useState(0);
-
+    const [maxSpends, setMaxSpends] =  useState<{ label: string; value: number }[]>([]);
     useFocusEffect(
         useCallback(() => {
             const loadData = async () => {
@@ -39,8 +37,8 @@ export default function Home() {
                 // Sort spends by datetime DESC
                 const sortedSpends = spends.sort((a, b) => b.spendDatetime - a.spendDatetime);
 
-                // Set recent 6 spends directly
-                setRecentSpends(sortedSpends.slice(0, 6));
+                // Set recent 5 spends directly
+                setRecentSpends(sortedSpends.slice(0, 5));
 
                 // Filter spends in current month
                 const now = new Date();
@@ -53,21 +51,20 @@ export default function Home() {
                 });
 
                 // Calculate income & expenses based on transactionType
-                let income = 0;
-                let expense = 0;
+                let maxTransactions: Record<string, number> = {};
                 currentMonthSpends.forEach((spend) => {
-                    if (!spend.transactionType) {
-                        spend.transactionType = 'Expense';
-                    }
-                    if (spend.transactionType === 'Income') {
-                        income += spend.spendAmount;
-                    } else if (spend.transactionType === 'Expense') {
-                        expense += spend.spendAmount;
-                    }
-                });
+                    if (spend.accountName == null) return;
+                    const label = spend.allocationName
+                        ? spend.allocationName
+                        : `Others (${spend.accountName})`;
 
-                setTotalIncome(income);
-                setTotalExpense(expense);
+                    maxTransactions[label] = (maxTransactions[label] || 0) + 1;
+                });
+                let sorted = Object.entries(maxTransactions)
+                    .map(([label, value]) => ({ label, value }))
+                    .sort((a, b) => b.value - a.value);
+                sorted = sorted.slice(0, 4);    
+                setMaxSpends(sorted);
             };
 
             loadData();
@@ -81,56 +78,42 @@ export default function Home() {
             {/* Header */}
             <View
                 style={{
-                    padding: 20,
-                    backgroundColor: "black",
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 15,
+                    backgroundColor: "white",
                     width: "100%",
-                    height: "18%",
+                    height: "8%",
                 }}
             >   
                 <TouchableOpacity
-                    style={{ position: "absolute", right: 16, top: 30, width: 60, height: 60, justifyContent: 'center', alignItems: 'center' }}
                     onPress={navigateToProfile}
-                    hitSlop={10}   // 👈 adds 10px padding around touch area
+                    hitSlop={10}  
                 >
-                    <Ionicons name={"person-circle"} size={55} color={"white"} />
+                    <Ionicons name={"moon-outline"} size={25} color={"black"} />
                 </TouchableOpacity>
-                <Text style={{ color: "white", marginTop: 10, fontWeight: "200" }}>
-                    Hello 👋,
-                </Text>
-                <Text style={{ color: "white", marginTop: 10, fontSize: 24, fontWeight: "bold" }}>
-                    {userName}
-                </Text>
+                <Text style={{fontSize: 18, fontWeight: 'bold'}} >Overview</Text>
+                <TouchableOpacity
+                    onPress={navigateToProfile}
+                    hitSlop={10} 
+                >
+                    <Ionicons name={"settings-outline"} size={25} color={"black"} />
+                </TouchableOpacity>
             </View>
-            
-            {/* Curved SVG separator */}
-            <Svg width={width} height={100} viewBox={`0 0 ${width} 100`} style={{ marginTop: -1 }}>
-                <Path d={`M0,0 Q${width / 2},100 ${width},0`} fill="black" />
-            </Svg>
 
-            {/* Total balance + Income/Expense */}
-            <TotalBalanceCard totalIncome={totalIncome} totalExpense={totalExpense} />
-
-            {/* Transactions */}
+            {/* Home content */}
             <View
                 style={{
-                    width: "90%",
-                    height: "55%",
-                    marginTop: 15,
-                    paddingHorizontal: 5,
+                    width: "100%",
+                    height: "92%",
+                    paddingHorizontal: 15,
+                    backgroundColor: 'white'
                 }}
             >
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        width: "100%",
-                    }}
-                >
-                    <Text style={{ fontSize: 18, fontWeight: "600" }}>Transactions History</Text>
-                    <Text style={{ fontSize: 14, fontWeight: "600", color: "#aaa" }}>See all</Text>
-                </View>
-
-                <RecentSpends spends={recentSpends} />
+                <Networth userName={userName}></Networth>
+                <SpendThisMonth data={maxSpends}></SpendThisMonth>
+                <RecentSpends spends={recentSpends}></RecentSpends>
             </View>
         </View>
     );

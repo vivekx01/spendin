@@ -3,6 +3,8 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'rea
 import { deleteSpend, getAllSpends } from '@/db/spends';
 import { useFocusEffect } from 'expo-router';
 import EditSpendModal from '@/components/SpendHistory/EditSpend';
+import Transaction from '@/components/SpendHistory/Transaction';
+import roundOff from '@/utilities';
 
 interface Spend {
   id: string;
@@ -12,7 +14,7 @@ interface Spend {
   spendDatetime: number;
   spendName: string;
   spendNotes: string | null;
-  accountName: string | null;
+  accountName: string;
   allocationName: string | null;
   transactionType: string;
   spendCategoryName: string | null;
@@ -52,54 +54,27 @@ export default function SpendHistory() {
     }, [])
   );
 
-  const handleDeleteSpend = async (spendId: string) => {
-    const isSuccess = await deleteSpend(spendId);
-    if (isSuccess) {
-      setSpends(prevSpends => prevSpends.filter(spend => spend.id !== spendId));
-      Alert.alert('Success', 'Spend deleted successfully');
-    } else {
-      Alert.alert('Error', 'Failed to delete spend');
-    }
-  }
+  
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>This Month's Transactions</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>Transaction History</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {spends.length === 0 ? (
           <Text style={styles.noData}>No transactions found for this month.</Text>
         ) : (
           spends.map((spend) => (
-            <View key={spend.id} style={styles.spendItem}>
-              <Text style={styles.amount}>₹ {spend.spendAmount}</Text>
-              <Text style={styles.meta}>
-                {spend.spendName} • {formatDate(spend.spendDatetime)}
-              </Text>
-              <Text style={styles.details}>
-                Account: {spend.accountName || 'Unknown'}
-              </Text>
-              <Text style={styles.details}>
-                Category: {spend.spendCategoryName || 'None'}
-              </Text>
-              {spend.spendNotes ? (
-                <Text style={styles.notes}>Notes: {spend.spendNotes}</Text>
-              ) : null}
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedSpend(spend);
-                  setShowModal(true);
-                }}
-              >
-                <Text style={styles.editText}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  handleDeleteSpend(spend.id);
-                }}
-              >
-                <Text style={styles.editText}>Delete</Text>
-              </TouchableOpacity>
-            </View>
+            <Transaction 
+              key={spend.id}
+              type={spend.transactionType.toLowerCase()}
+              account={spend.accountName}
+              allocation={spend.allocationName}
+              name={spend.spendName}
+              amount={roundOff(spend.spendAmount)}
+              spend = {spend}
+              updateSelectedSpend = {setSelectedSpend}
+              updateShowModal = {setShowModal}
+            ></Transaction>
           ))
         )}
       </ScrollView>
@@ -108,6 +83,7 @@ export default function SpendHistory() {
         <EditSpendModal
           visible={showModal}
           spend={selectedSpend}
+          setSpends = {setSpends}
           onClose={() => {
             setShowModal(false);
             setSelectedSpend(null);
@@ -119,7 +95,7 @@ export default function SpendHistory() {
           }}
         />
       )}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -133,6 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 12,
+    textAlign: 'center'
   },
   scrollContent: {
     paddingBottom: 100,
