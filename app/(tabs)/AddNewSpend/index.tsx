@@ -1,11 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, TextInput, View, Button, Alert } from 'react-native';
+import { StyleSheet, TextInput, View, Button, Alert, Text, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { getAllAccounts } from '@/db';
 import { getAllocationsByAccountId } from '@/db/allocations';
 import { addNewSpend } from '@/db';
 import { router } from 'expo-router';
+import TransactionTypeToggle from '@/components/AddNewSpend/TransactionTypeToggle';
+import AmountInput from '@/components/AddNewSpend/AmountInput';
+import AccountPicker from '@/components/AddNewSpend/AccountPicker';
+import AllocationPicker from '@/components/AddNewSpend/AllocationPicker';
+import NotesInput from '@/components/AddNewSpend/NotesInput';
+import SpendNameInput from '@/components/AddNewSpend/SpendNameInput';
 
 interface Account {
   id: string;
@@ -85,7 +91,7 @@ const AddNewSpend = () => {
 
     const success = await addNewSpend({
       spendSource: selectedAccountId,
-      spendCategory: selectedAllocationId || null,
+      spendCategory: selectedAllocationId || undefined,
       amount,
       accountType : selectedAccount.account_type,
       transactionType,
@@ -117,10 +123,41 @@ const AddNewSpend = () => {
   const navigateToSelfTransfer = () => {
     router.push("/AddNewSpend/SelfTransfer");
   };
-
+  
   return (
     <View style={styles.container}>
-      <View style={styles.pickerWrapper}>
+      <Text style={styles.title}>Add Transaction</Text>
+      <TransactionTypeToggle onChange={(type:'Expense' | 'Income') => setTransactionType(type)} />
+      <AmountInput number={number} setNumber={setNumber} />
+      <SpendNameInput spendName={spendName} setSpendName={setSpendName} />
+      <AccountPicker
+        selectedAccountId={selectedAccountId}
+        setSelectedAccountId={setSelectedAccountId}
+        setSelectedAllocationId={setSelectedAllocationId}
+        accounts={accounts}
+      />
+      {allocations.length > 0 && (
+        <AllocationPicker
+          selectedAllocationId={selectedAllocationId}
+          setSelectedAllocationId={setSelectedAllocationId}
+          allocations={allocations}
+        />
+      )}
+      <NotesInput notes={notes} setNotes={setNotes} />
+      <View style={styles.buttonContainer}
+      >
+        <TouchableOpacity onPress={handlePress} style={styles.button}>
+          <Text style={{color:'white', textAlign:'center', fontSize: 16}}>
+            Add Transaction
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={navigateToSelfTransfer} style={styles.button}>
+          <Text style={{color:'white', textAlign:'center', fontSize: 16}}>
+            Self Transfer
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {/* <View style={styles.pickerWrapper}>
         <Picker
           selectedValue={transactionType}
           onValueChange={(value: 'Expense' | 'Income') => setTransactionType(value)}
@@ -195,41 +232,55 @@ const AddNewSpend = () => {
       >
         <Button title="Add Transaction" onPress={handlePress} color={'black'} />
         <Button title="Self Transfer" onPress={navigateToSelfTransfer} color={'black'} />
-      </View>
+      </View> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
+    height: '100%'
+  },
+  title: {
+    textAlign: 'center',
     padding: 16,
-    justifyContent: 'center',
-    height: '100%',
+    fontSize: 18, 
+    fontWeight: 'bold'
   },
-  input: {
-    height: 50,
-    marginBottom: 12,
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    borderColor: '#000',
-    backgroundColor: '#fff',
-  },
-  pickerWrapper: {
-    height: 50,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#000',
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-  },
-  picker: {
-    height: 50,
-  },
-  pickerItem: {
-    fontSize: 14,
-  },
+  buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 16, gap: 10},
+  button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
 });
+// const styles = StyleSheet.create({
+//   container: {
+//     padding: 16,
+//     justifyContent: 'center',
+//     height: '100%',
+//   },
+//   input: {
+//     height: 50,
+//     marginBottom: 12,
+//     borderWidth: 1,
+//     paddingHorizontal: 10,
+//     borderRadius: 5,
+//     borderColor: '#000',
+//     backgroundColor: '#fff',
+//   },
+//   pickerWrapper: {
+//     height: 50,
+//     marginBottom: 12,
+//     borderWidth: 1,
+//     borderRadius: 5,
+//     borderColor: '#000',
+//     backgroundColor: '#fff',
+//     justifyContent: 'center',
+//   },
+//   picker: {
+//     height: 50,
+//   },
+//   pickerItem: {
+//     fontSize: 14,
+//   },
+// });
 
 export default AddNewSpend;
