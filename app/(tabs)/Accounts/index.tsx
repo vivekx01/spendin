@@ -59,9 +59,9 @@ const index = () => {
   );
 
   return (
-    <View style={{backgroundColor:'white', padding: 16}}>
+    <View style={{backgroundColor:'white'}}>
       <Text style={styles.title}>Accounts</Text>
-      <Text style={{fontSize: 22, fontWeight: '700', marginTop: 20}}>Your accounts</Text>
+      <Text style={{fontSize: 22, fontWeight: '700', marginTop: 20, paddingHorizontal: 16}}>Your accounts</Text>
       {accounts.length > 0 ? (
         <ScrollView style={styles.table}>
           
@@ -92,7 +92,11 @@ const index = () => {
         <Text>No accounts found</Text>
       )}
       <View style={styles.buttonContainer}>
-        <Button title="Add Account" onPress={navigateToAddNewAccount} />
+        <TouchableOpacity onPress={navigateToAddNewAccount}
+          style={{backgroundColor:'#187ce4', padding: 12, borderRadius: 10, marginTop: 10}}
+        >
+          <Text style={{color:'white', textAlign:'center', fontSize: 16}}>Add Account</Text>
+        </TouchableOpacity>
         {/* <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} /> */}
       </View>
     </View>
@@ -100,16 +104,12 @@ const index = () => {
 };
 
 const styles = StyleSheet.create({
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor:'white' },
-  table: {marginTop: 10, backgroundColor:'white', height: '78%' },
+  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor:'white', paddingTop: 16},
+  table: {marginTop: 10, backgroundColor:'white', height: '75%', width: '100%', paddingHorizontal: 16 },
   row: { flexDirection: 'row'},
   cell: { flex: 1, padding: 8, textAlign: 'center' },
   headerCell: { fontWeight: 'bold' },
-  buttonContainer: { marginTop: 16, padding: 16, gap: 16 },
-  buttonColumn: {
-    flexDirection: 'column',
-    gap: 6,
-  },
+  buttonContainer: { marginTop: 10, padding: 12}
 });
 
 export default index;
