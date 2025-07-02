@@ -33,11 +33,11 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 12,
+        paddingVertical: 10,
     },
     name: {
         marginLeft: 15,
-        fontSize: 18,
+        fontSize: 16,
         marginBottom: 2
     },
     amount: {

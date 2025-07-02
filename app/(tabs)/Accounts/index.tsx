@@ -1,9 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import React, { useCallback } from 'react';
-import Button from '@/components/Button';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
-import roundOff from '@/utilities';
 import Account from '@/components/Accounts/Account';
 
 const index = () => {
@@ -64,7 +62,6 @@ const index = () => {
       <Text style={{fontSize: 22, fontWeight: '700', marginTop: 20, paddingHorizontal: 16}}>Your accounts</Text>
       {accounts.length > 0 ? (
         <ScrollView style={styles.table}>
-          
           {/* Table Rows */}
           {accounts.map((account: any) => {
             const isCredit = account.account_type === 'Credit';
@@ -91,25 +88,23 @@ const index = () => {
       ) : (
         <Text>No accounts found</Text>
       )}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={navigateToAddNewAccount}
-          style={{backgroundColor:'#187ce4', padding: 12, borderRadius: 10, marginTop: 10}}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={navigateToAddNewAccount}
+          style={{backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}}
         >
           <Text style={{color:'white', textAlign:'center', fontSize: 16}}>Add Account</Text>
         </TouchableOpacity>
+        </View>
         {/* <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} /> */}
-      </View>
+      
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor:'white', paddingTop: 16},
-  table: {marginTop: 10, backgroundColor:'white', height: '75%', width: '100%', paddingHorizontal: 16 },
-  row: { flexDirection: 'row'},
-  cell: { flex: 1, padding: 8, textAlign: 'center' },
-  headerCell: { fontWeight: 'bold' },
-  buttonContainer: { marginTop: 10, padding: 12}
+  table: {marginTop: 10, backgroundColor:'white', height: '78%', width: '100%', paddingHorizontal: 16 },
+  buttonContainer: {backgroundColor:'white', flexDirection:'row', justifyContent: 'center', paddingVertical: 10}
 });
 
 export default index;
