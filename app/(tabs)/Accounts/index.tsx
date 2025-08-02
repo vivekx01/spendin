@@ -1,18 +1,14 @@
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable } from 'react-native';
 import React, { useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
-import Account from '@/components/Accounts/Account';
+import AccountsSummary from '@/components/Accounts/AccountsSummary';
 
 const index = () => {
-  const [accounts, setAccounts] = React.useState([]);
+  const [summary, setSummary] = React.useState('');
 
   const navigateToAddNewAccount = () => {
     router.navigate('/Accounts/AddNewAccount');
-  };
-
-  const navigateToCreateNewAllocation = () => {
-    router.navigate('/Accounts/CreateNewAllocation');
   };
 
   const navigateToAllocations = (
@@ -27,9 +23,39 @@ const index = () => {
     });
   };
 
+  const navigateToAccountType = (accountType:string) => {
+    switch (accountType) {
+      case "bank":
+        router.navigate('/Accounts/BankAccounts');
+        break;
+      case "credit":
+        router.navigate('/Accounts/CreditAccounts');
+        break;
+      default:
+        router.navigate('/Accounts/BankAccounts');
+        break;
+    }
+  }
+
   const fetchAccounts = async () => {
     const accounts = await getAllAccounts();
-    setAccounts(accounts);
+    const summary: any = {
+      bank: {
+        count: 0,
+        totalBalance: 0,
+      },
+      credit: {
+        count: 0,
+        totalBalance: 0,
+      },
+    };
+
+    accounts.forEach((account: any) => {
+      const type = account.account_type === 'Credit' ? 'credit' : 'bank';
+      summary[type].count += 1;
+      summary[type].totalBalance += account.account_balance;
+    });
+    setSummary(summary);
   };
 
   const handleDeleteAccount = async (accountId: string) => {
@@ -57,54 +83,34 @@ const index = () => {
   );
 
   return (
-    <View style={{backgroundColor:'white'}}>
+    <View style={{ backgroundColor: 'white', height: '100%' }}>
       <Text style={styles.title}>Accounts</Text>
-      <Text style={{fontSize: 22, fontWeight: '700', marginTop: 20, paddingHorizontal: 16}}>Your accounts</Text>
-      {accounts.length > 0 ? (
-        <ScrollView style={styles.table}>
-          {/* Table Rows */}
-          {accounts.map((account: any) => {
-            const isCredit = account.account_type === 'Credit';
-            const availableCredit = isCredit
-              ? account.credit_limit - account.account_balance
-              : 0;
+      <View style={{gap:8, marginTop: 10}}>
+        {Object.keys(summary).map((accountType: any) => (
+          <Pressable key={accountType} style={{padding: 12}} onPress={() => navigateToAccountType(accountType)}>
+            <AccountsSummary accountType={accountType} accountSummary={summary[accountType]}></AccountsSummary>
+          </Pressable>
+        ))}
+      </View>
+      {/* <Text style={{ fontSize: 22, fontWeight: '700', marginTop: 20, paddingHorizontal: 16 }}>Your accounts</Text> */}
 
-            return (
-              <TouchableOpacity 
-                key={account.id}
-                onPress={() =>
-                navigateToAllocations(
-                  account.id,
-                  account.account_name,
-                  account.account_balance,
-                  account.account_type
-                )}>
-                <Account account_name={account.account_name} account_type={account.account_type} account_balance={account.account_type === 'Credit' ? availableCredit : account.account_balance}></Account>
-              </TouchableOpacity>
-              
-            );
-          })}
-        </ScrollView>
-      ) : (
-        <Text>No accounts found</Text>
-      )}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={navigateToAddNewAccount}
-          style={{backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}}
+      {/* <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={navigateToAddNewAccount}
+          style={{ backgroundColor: '#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50 }}
         >
-          <Text style={{color:'white', textAlign:'center', fontSize: 16}}>Add Account</Text>
+          <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>Add Account</Text>
         </TouchableOpacity>
-        </View>
-        {/* <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} /> */}
-      
+      </View> */}
+      {/* <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} /> */}
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor:'white', paddingTop: 16},
-  table: {marginTop: 10, backgroundColor:'white', height: '78%', width: '100%', paddingHorizontal: 16 },
-  buttonContainer: {backgroundColor:'white', flexDirection:'row', justifyContent: 'center', paddingVertical: 10}
+  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
+  table: { marginTop: 10, backgroundColor: 'white', height: '78%', width: '100%', paddingHorizontal: 16 },
+  buttonContainer: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 }
 });
 
 export default index;

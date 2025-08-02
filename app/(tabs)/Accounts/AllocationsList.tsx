@@ -1,9 +1,9 @@
-import { View, ScrollView, Text, StyleSheet, Alert } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useLocalSearchParams, router, useFocusEffect } from 'expo-router';
-import Button from '@/components/Button';
-import { getAllocationsByAccountId, deleteAllocation } from '@/db/allocations';
+import { getAllocationsByAccountId } from '@/db/allocations';
 import roundOff from '@/utilities';
+import Allocation from '@/components/Accounts/Allocation';
 
 const AllocationsList = () => {
     const {
@@ -26,7 +26,7 @@ const AllocationsList = () => {
         setAllocations(result);
 
         let totalAllocated = result.reduce(
-            (sum, alloc) => sum + alloc.allocation_amount,
+            (sum:number, alloc:any) => sum + alloc.allocation_amount,
             0
         );
 
@@ -60,91 +60,68 @@ const AllocationsList = () => {
         });
     };
 
-    const handleDelete = async (allocId: string) => {
-        Alert.alert('Confirm Delete', 'Are you sure you want to delete this allocation?', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete',
-                style: 'destructive',
-                onPress: async () => {
-                    const success = await deleteAllocation(allocId);
-                    if (success) {
-                        Alert.alert('Deleted successfully');
-                        fetchAllocations();
-                    } else {
-                        Alert.alert('Failed to delete');
-                    }
-                },
-            },
-        ]);
+    const navigateToCreateNewAllocation = () => {
+        router.navigate('/Accounts/CreateNewAllocation');
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <Button title="Back" onPress={navigateBack} color="black" />
-            <Text style={styles.title}>Allocations for {accountName}</Text>
+        <View style={styles.container}>
+            {/* <Button title="Back" onPress={navigateBack} color="black" /> */}
+            <Text style={styles.title}>{accountName} - Categories</Text>
 
-            {accountType === 'Credit' && (
+            {/* {accountType === 'Credit' && (
                 <Text style={styles.creditNote}>
                     Credit account – Outstanding dues will be shown for such accounts.
                 </Text>
-            )}
+            )} */}
 
-            <View style={styles.allocList}>
+            <ScrollView style={styles.table}>
                 {allocations.map((alloc: any) => (
-                    <View key={alloc.id} style={styles.allocItem}>
-                        <View style={styles.row}>
-                            <Text style={styles.allocName}>{alloc.allocation_name}</Text>
-                            <Text style={styles.allocAmount}>₹ {roundOff(alloc.allocation_amount)}</Text>
-                        </View>
-                        <View style={styles.actions}>
-                            <Button title="Edit" onPress={() => startEditing(alloc)} />
-                            <Button title="Delete" onPress={() => handleDelete(alloc.id)} />
-                        </View>
-                    </View>
+                    <TouchableOpacity key={alloc.id} onPress={() => startEditing(alloc)}>
+                        <Allocation allocation_name={alloc.allocation_name} allocation_amount={roundOff(alloc.allocation_amount)}></Allocation>
+                    </TouchableOpacity>
                 ))}
 
                 {Math.abs(balance) > 1 && (
-                    <View style={styles.allocItem}>
-                        <View style={styles.row}>
-                            <Text style={styles.allocName}>
-                                {accountType === 'Credit' ? 'Outstanding Dues' : 'Others'}
-                            </Text>
-                            <Text style={styles.allocAmount}>
-                                ₹ {roundOff(Math.abs(balance))}
-                            </Text>
-                        </View>
-                    </View>
+                    <Allocation allocation_name={accountType === 'Credit' ? 'Outstanding Dues' : 'Others'} allocation_amount={roundOff(Math.abs(balance))}></Allocation>
+                    // <View>
+                    //     <View style={styles.row}>
+                    //         <Text style={styles.allocName}>
+                    //             {accountType === 'Credit' ? 'Outstanding Dues' : 'Others'}
+                    //         </Text>
+                    //         <Text style={styles.allocAmount}>
+                    //             ₹ {roundOff(Math.abs(balance))}
+                    //         </Text>
+                    //     </View>
+                    // </View>
                 )}
+            </ScrollView>
+            <View style={styles.buttonContainer}>
+                {accountType !== 'Credit' ? (
+                    <TouchableOpacity
+                        onPress={navigateToCreateNewAllocation}
+                        style={{ backgroundColor: '#187ce4', paddingVertical: 12, paddingHorizontal: 100, borderRadius: 50 }}
+                    >
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>Create New Category</Text>
+                    </TouchableOpacity>
+                ) : <View style={{paddingVertical: 12, paddingHorizontal: 100, backgroundColor: 'white'}}>
+                        <View style={{ height: 48, backgroundColor: 'transparent' }} />
+                    </View>}
             </View>
-        </ScrollView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { paddingHorizontal: 16, backgroundColor: 'white', flex: 1 },
-    title: { fontSize: 18, fontWeight: 'bold', marginVertical: 16 },
+    container: { backgroundColor: 'white' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
+    table: { marginTop: 10, backgroundColor: 'white', height: '85%', width: '100%', paddingHorizontal: 16 },
     creditNote: {
         fontStyle: 'italic',
         color: 'gray',
         marginBottom: 8,
     },
-    allocList: { marginTop: 8 },
-    allocItem: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 4,
-        padding: 12,
-        marginBottom: 12,
-    },
-    row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-    actions: {
-        marginTop: 8,
-        gap: 8,
-        width: '100%',
-    },
-    allocName: { fontSize: 16 },
-    allocAmount: { fontSize: 16, fontWeight: 'bold' },
+    buttonContainer: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 }
 });
 
 export default AllocationsList;

@@ -3,7 +3,7 @@ import { View, TextInput, Alert, StyleSheet, Text } from 'react-native';
 import React, { useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import Button from '@/components/Button';
-import { updateAllocation } from '@/db/allocations';
+import { deleteAllocation, updateAllocation } from '@/db/allocations';
 
 const EditAllocation = () => {
     const {
@@ -42,6 +42,25 @@ const EditAllocation = () => {
         }
     };
 
+    const handleDelete = async () => {
+            Alert.alert('Confirm Delete', 'Are you sure you want to delete this allocation?', [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        const success = await deleteAllocation(allocationId);
+                        if (success) {
+                            router.back()
+                            Alert.alert('Deleted successfully');
+                        } else {
+                            Alert.alert('Failed to delete');
+                        }
+                    },
+                },
+            ]);
+        };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Edit Allocation</Text>
@@ -62,6 +81,7 @@ const EditAllocation = () => {
             />
             <View style={styles.buttonRow}>
                 <Button title="Save" onPress={handleSave} />
+                <Button title="Delete" onPress={handleDelete} />
                 <View style={{ marginLeft: 8 }}>
                     <Button title="Cancel" onPress={() => router.back()} color="gray" />
                 </View>
