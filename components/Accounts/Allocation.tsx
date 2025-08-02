@@ -13,7 +13,7 @@ const Allocation: React.FC<allocationData> = ({ allocation_name, allocation_amou
             <CardIcon></CardIcon>
             <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{allocation_name}</Text>
-                <Text style={styles.category}>Tap to Edit</Text>
+                <Text style={styles.category}>{allocation_name==='Others' ? 'Uncategorized Balance' : allocation_name==='Outstanding Dues' ? 'Utilised Amount' : 'Tap to Edit' }</Text>
             </View>
             <Text style={[styles.amount, { color: "black" }]}>
                 ₹{allocation_amount}

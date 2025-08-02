@@ -2,9 +2,10 @@ import { View, Text, Image, StyleSheet } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import { useFocusEffect } from 'expo-router';
 import { getAllAccounts } from '@/db';
+import roundOff from '@/utilities';
 
 const Networth = ({ userName }: { userName: string }) => {
-  const [networth, setNetWorth] = useState([]);
+  const [networth, setNetWorth] = useState(0);
   const fetchAccounts = async () => {
     const accountsData = await getAllAccounts();
     const totalBankBalance = accountsData
@@ -25,7 +26,7 @@ const Networth = ({ userName }: { userName: string }) => {
       <Image source={require('@/assets/images/user-boy.png')} style={styles.image} />
       <View>
         <Text style={styles.userName}>{userName}</Text>
-        <Text style={styles.amount}>₹ {networth}</Text>
+        <Text style={styles.amount}>₹ {roundOff(networth)}</Text>
         <Text style={styles.netWorthText}>Current Net Worth</Text>
       </View>
     </View>

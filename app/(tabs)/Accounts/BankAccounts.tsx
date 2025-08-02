@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable } from 'react-native';
 import React, { useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
 import Account from '@/components/Accounts/Account';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import renderRightActions from '@/components/Accounts/RenderRightActions';
 
 const BankAccounts = () => {
   const [accounts, setAccounts] = React.useState([]);
@@ -25,7 +27,7 @@ const BankAccounts = () => {
 
   const fetchAccounts = async () => {
     const allAccounts = await getAllAccounts();
-    const bankAccounts = allAccounts.filter((acc:any) => acc.account_type === 'Bank');
+    const bankAccounts = allAccounts.filter((acc: any) => acc.account_type === 'Bank');
     setAccounts(bankAccounts);
   };
 
@@ -60,23 +62,28 @@ const BankAccounts = () => {
       {accounts.length > 0 ? (
         <ScrollView style={styles.table}>
           {accounts.map((account: any) => (
-            <TouchableOpacity
+            <Swipeable
               key={account.id}
-              onPress={() =>
-                navigateToAllocations(
-                  account.id,
-                  account.account_name,
-                  account.account_balance,
-                  account.account_type
-                )
-              }
+              renderRightActions={() => renderRightActions(account.id, handleDeleteAccount)}
             >
-              <Account
-                account_name={account.account_name}
-                account_type={account.account_type}
-                account_balance={account.account_balance}
-              />
-            </TouchableOpacity>
+              <Pressable
+                key={account.id}
+                onPress={() =>
+                  navigateToAllocations(
+                    account.id,
+                    account.account_name,
+                    account.account_balance,
+                    account.account_type
+                  )
+                }
+              >
+                <Account
+                  account_name={account.account_name}
+                  account_type={account.account_type}
+                  account_balance={account.account_balance}
+                />
+              </Pressable>
+            </Swipeable>
           ))}
         </ScrollView>
       ) : (

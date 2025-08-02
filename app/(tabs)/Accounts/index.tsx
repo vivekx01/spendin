@@ -3,10 +3,17 @@ import React, { useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
 import AccountsSummary from '@/components/Accounts/AccountsSummary';
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
 
 const index = () => {
   const [summary, setSummary] = React.useState('');
-
+  configureReanimatedLogger({
+    level: ReanimatedLogLevel.warn,
+    strict: false, // Reanimated runs in strict mode by default
+  });
   const navigateToAddNewAccount = () => {
     router.navigate('/Accounts/AddNewAccount');
   };
@@ -23,7 +30,7 @@ const index = () => {
     });
   };
 
-  const navigateToAccountType = (accountType:string) => {
+  const navigateToAccountType = (accountType: string) => {
     switch (accountType) {
       case "bank":
         router.navigate('/Accounts/BankAccounts');
@@ -85,9 +92,9 @@ const index = () => {
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <Text style={styles.title}>Accounts</Text>
-      <View style={{gap:8, marginTop: 10}}>
+      <View style={{ gap: 8, marginTop: 10 }}>
         {Object.keys(summary).map((accountType: any) => (
-          <Pressable key={accountType} style={{padding: 12}} onPress={() => navigateToAccountType(accountType)}>
+          <Pressable key={accountType} style={{ padding: 12 }} onPress={() => navigateToAccountType(accountType)}>
             <AccountsSummary accountType={accountType} accountSummary={summary[accountType]}></AccountsSummary>
           </Pressable>
         ))}

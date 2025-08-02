@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable } from 'react-native';
 import React, { useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
 import Account from '@/components/Accounts/Account';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import renderRightActions from '@/components/Accounts/RenderRightActions';
 
 const CreditAccounts = () => {
   const [accounts, setAccounts] = React.useState([]);
@@ -63,7 +65,11 @@ const CreditAccounts = () => {
             const availableCredit = account.credit_limit - account.account_balance;
 
             return (
-              <TouchableOpacity
+              <Swipeable
+              key={account.id}
+              renderRightActions={() => renderRightActions(account.id, handleDeleteAccount)}
+            >
+              <Pressable
                 key={account.id}
                 onPress={() =>
                   navigateToAllocations(
@@ -79,7 +85,8 @@ const CreditAccounts = () => {
                   account_type={account.account_type}
                   account_balance={availableCredit}
                 />
-              </TouchableOpacity>
+              </Pressable>
+            </Swipeable>
             );
           })}
         </ScrollView>
