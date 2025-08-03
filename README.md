@@ -16,7 +16,12 @@ Spendin is an all-in-one **personal finance management app** that helps you trac
 
 ## 📱 Screenshots
 
-Will be adding soon
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/3ecda177-68a5-4262-95d4-82b1dde26ca3" width="20%" />
+  <img src="https://github.com/user-attachments/assets/95b20a47-6b60-442a-ba96-fda50953a274" width="20%" />
+  <img src="https://github.com/user-attachments/assets/f94e1e88-3aa4-4d14-9c12-f673f8f235f2" width="20%" />
+  <img src="https://github.com/user-attachments/assets/55baff2b-04f8-4a26-91b0-c4cb66cdbab0" width="20%" />
+</p>
 
 ---
 
