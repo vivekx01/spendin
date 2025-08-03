@@ -24,4 +24,3 @@ Will be adding soon
 
 > 🔗 [Download APK (Android)](https://github.com/vivekx01/spendin/releases/download/1.0.9/Spendin-1.0.9-alpha.apk)
 
-- 🔗 [Dow<!
