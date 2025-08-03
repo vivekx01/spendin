@@ -94,7 +94,7 @@ const CreditAccounts = () => {
         <Text style={{ textAlign: 'center', marginTop: 20 }}>No credit card accounts found</Text>
       )}
 
-      <View style={styles.buttonContainer}>
+      {/* <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={navigateToAddNewAccount}
           style={{
@@ -106,7 +106,7 @@ const CreditAccounts = () => {
         >
           <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>Add Account</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   table: {
     marginTop: 10,
     backgroundColor: 'white',
-    height: '85%',
+    height: '95%',
     width: '100%',
     paddingHorizontal: 16,
   },

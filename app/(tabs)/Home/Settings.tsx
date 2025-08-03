@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Button, Text, Modal, Pressable, StyleSheet } from 'react-native';
+import { View, Button, Text, Modal, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
 import { exportLogs } from '@/utilities/Home/exportLogs';
 import { exportAllData, pickAndImportDataFromFile } from '@/db';
-export default function Profile() {
+import SettingItem from '@/components/Home/SettingItem';
+export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -31,11 +32,26 @@ export default function Profile() {
 
     return (
         <View style={styles.container}>
-            <Button title="Back" onPress={navigateBack} color="black" />
+            <Text style={styles.title}>Settings</Text>
+            <View style={{gap:6, marginTop: 10}}>
+                <TouchableOpacity onPress={handleCheckUpdate}>
+                    <SettingItem label={"Check for Updates"}></SettingItem>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={exportLogs}>
+                    <SettingItem label={"Share Error Logs"}></SettingItem>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={exportAllData}>
+                    <SettingItem label={"Create Backup"}></SettingItem>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={pickAndImportDataFromFile}>
+                    <SettingItem label={"Restore From a Backup"}></SettingItem>
+                </TouchableOpacity>
+            </View>
+            {/* <Button title="Back" onPress={navigateBack} color="black" />
             <Button title="Check for Updates" onPress={handleCheckUpdate} color="black" />
             <Button title="Share Error logs" onPress={exportLogs} color="black" />
             <Button title="Create backup" onPress={exportAllData} color="black" />
-            <Button title="Restore from a backup" onPress={pickAndImportDataFromFile} color="black" />
+            <Button title="Restore from a backup" onPress={pickAndImportDataFromFile} color="black" /> */}
 
             <Modal
                 visible={modalVisible}
@@ -67,9 +83,8 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1, justifyContent: 'center', gap: 20, padding: 20
-    },
+    container: { backgroundColor: 'white', height: '100%' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
     modalOverlay: {
         flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)',
     },

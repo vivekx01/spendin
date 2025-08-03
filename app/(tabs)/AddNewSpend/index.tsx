@@ -151,7 +151,7 @@ const AddNewSpend = () => {
             Add Transaction
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={navigateToSelfTransfer} style={styles.button}>
+        <TouchableOpacity onPress={navigateToSelfTransfer} style={styles.selftransferbutton}>
           <Text style={{color:'white', textAlign:'center', fontSize: 16}}>
             Self Transfer
           </Text>
@@ -249,7 +249,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 16, gap: 10},
-  button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
+  button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+  selftransferbutton: {backgroundColor:'#388e3c', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
 });
 // const styles = StyleSheet.create({
 //   container: {

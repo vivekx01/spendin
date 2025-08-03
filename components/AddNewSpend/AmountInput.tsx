@@ -1,14 +1,14 @@
 import React from 'react';
 import { TextInput, StyleSheet, View } from 'react-native';
 
-const AmountInput = ({ number, setNumber }) => {
+const AmountInput = ({ number, setNumber, placeholder = "Amount" }) => {
     return (
         <View style={styles.container}>
             <TextInput
                 style={styles.input}
                 onChangeText={setNumber}
                 value={number}
-                placeholder="Amount"
+                placeholder= {placeholder}
                 placeholderTextColor="#6a7581"
                 keyboardType="numeric"
             />

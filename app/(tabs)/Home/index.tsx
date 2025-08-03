@@ -1,4 +1,4 @@
-import { Text, View, Dimensions, TouchableOpacity } from "react-native";
+import { Text, View, Dimensions, TouchableOpacity, Alert } from "react-native";
 import { useState, useCallback } from "react";
 import { router, useFocusEffect } from 'expo-router';
 import Networth from "@/components/Home/Networth";
@@ -71,7 +71,10 @@ export default function Home() {
         }, [])
     );
     const navigateToProfile = () => {
-        router.push('/Home/Profile');
+        router.push('/Home/Settings');
+    }
+    const switchTheme = () => {
+        Alert.alert("Coming Soon..", "Feature still under development")
     }
     return (
         <View style={{ flex: 1, alignItems: "center" }}>
@@ -88,7 +91,7 @@ export default function Home() {
                 }}
             >   
                 <TouchableOpacity
-                    onPress={navigateToProfile}
+                    onPress={switchTheme}
                     hitSlop={10}  
                 >
                     <Ionicons name={"moon-outline"} size={25} color={"black"} />

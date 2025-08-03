@@ -109,7 +109,19 @@ const index = () => {
         </TouchableOpacity>
       </View> */}
       {/* <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} /> */}
-
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={navigateToAddNewAccount}
+          style={{
+            backgroundColor: '#187ce4',
+            paddingVertical: 12,
+            paddingHorizontal: 120,
+            borderRadius: 50,
+          }}
+        >
+          <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>Add Account</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

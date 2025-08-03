@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react'
 import { useFocusEffect } from 'expo-router';
 import { getAllAccounts } from '@/db';
 import roundOff from '@/utilities';
+import LetterAvatar from './LetterAvatar';
 
 const Networth = ({ userName }: { userName: string }) => {
   const [networth, setNetWorth] = useState(0);
@@ -19,11 +20,13 @@ const Networth = ({ userName }: { userName: string }) => {
       fetchAccounts();
     }, [])
   );
+  
   return (
     <View
       style={styles.container}
     >
-      <Image source={require('@/assets/images/user-boy.png')} style={styles.image} />
+      {/* <Image source={require('@/assets/images/user-boy.png')} style={styles.image} /> */}
+      <LetterAvatar letter={userName.charAt(0)}></LetterAvatar>
       <View>
         <Text style={styles.userName}>{userName}</Text>
         <Text style={styles.amount}>₹ {roundOff(networth)}</Text>

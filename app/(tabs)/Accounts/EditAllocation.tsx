@@ -1,9 +1,11 @@
 // app/EditAllocation.tsx
-import { View, TextInput, Alert, StyleSheet, Text } from 'react-native';
+import { View, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import Button from '@/components/Button';
 import { deleteAllocation, updateAllocation } from '@/db/allocations';
+import AmountInput from '@/components/AddNewSpend/AmountInput';
+import TxtInput from '@/components/Accounts/TxtInput';
 
 const EditAllocation = () => {
     const {
@@ -43,56 +45,78 @@ const EditAllocation = () => {
     };
 
     const handleDelete = async () => {
-            Alert.alert('Confirm Delete', 'Are you sure you want to delete this allocation?', [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Delete',
-                    style: 'destructive',
-                    onPress: async () => {
-                        const success = await deleteAllocation(allocationId);
-                        if (success) {
-                            router.back()
-                            Alert.alert('Deleted successfully');
-                        } else {
-                            Alert.alert('Failed to delete');
-                        }
-                    },
+        Alert.alert('Confirm Delete', 'Are you sure you want to delete this allocation?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                    const success = await deleteAllocation(allocationId);
+                    if (success) {
+                        router.back()
+                        Alert.alert('Deleted successfully');
+                    } else {
+                        Alert.alert('Failed to delete');
+                    }
                 },
-            ]);
-        };
+            },
+        ]);
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Edit Allocation</Text>
-            <TextInput
-                value={editedName}
-                onChangeText={setEditedName}
-                style={styles.input}
-                placeholder="Allocation Name"
-                placeholderTextColor="#999"
-            />
-            <TextInput
-                value={editedAmount}
-                onChangeText={setEditedAmount}
-                style={styles.input}
-                keyboardType="numeric"
-                placeholder="Amount"
-                placeholderTextColor="#999"
-            />
-            <View style={styles.buttonRow}>
-                <Button title="Save" onPress={handleSave} />
-                <Button title="Delete" onPress={handleDelete} />
-                <View style={{ marginLeft: 8 }}>
-                    <Button title="Cancel" onPress={() => router.back()} color="gray" />
+            <View>
+                {/* <TextInput
+                    value={editedName}
+                    onChangeText={setEditedName}
+                    style={styles.input}
+                    placeholder="Allocation Name"
+                    placeholderTextColor="#999"
+                /> */}
+                {/* <TextInput
+                    value={editedAmount}
+                    onChangeText={setEditedAmount}
+                    style={styles.input}
+                    keyboardType="numeric"
+                    placeholder="Amount"
+                    placeholderTextColor="#999"
+                /> */}
+                <TxtInput text={editedName} setText={setEditedName} placeholder={"Enter Allocation Name"}></TxtInput>
+                <AmountInput number={editedAmount} setNumber={setEditedAmount} />
+                <View style={styles.buttonContainer}
+                >
+                    <TouchableOpacity onPress={handleSave} style={styles.button}>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+                            Save
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleDelete} style={styles.deletebutton}>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+                            Delete
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.back()} style={styles.cancelbutton}>
+                        <Text style={{ color: 'black', textAlign: 'center', fontSize: 16 }}>
+                            Cancel
+                        </Text>
+                    </TouchableOpacity>
                 </View>
+                {/* <View style={styles.buttonRow}>
+                    <Button title="Save" onPress={handleSave} />
+                    <Button title="Delete" onPress={handleDelete} />
+                    <View style={{ marginLeft: 8 }}>
+                        <Button title="Cancel" onPress={() => router.back()} color="gray" />
+                    </View>
+                </View> */}
             </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { padding: 16 },
-    title: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
+    container: { backgroundColor: 'white', height: '100%' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
@@ -102,10 +126,14 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 16,
     },
-    buttonRow: {
-        flexDirection: 'row',
-        marginTop: 10,
-    },
+    // buttonRow: {
+    //     flexDirection: 'row',
+    //     marginTop: 10,
+    // },
+    buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
+    button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    cancelbutton: {backgroundColor:'#ddd', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    deletebutton: {backgroundColor:'#d32f2f', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
 });
 
 export default EditAllocation;

@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { router } from 'expo-router';
 import { getAllAccounts } from '@/db';
 import { getAllocationsByAccountId } from '@/db/allocations';
 import { addNewSpend } from '@/db';
-import Button from '@/components/Button';
+
+import AmountInput from '@/components/AddNewSpend/AmountInput';
+import NotesInput from '@/components/AddNewSpend/NotesInput';
+import AccountPicker from '@/components/AddNewSpend/AccountPicker';
+import AllocationPicker from '@/components/AddNewSpend/AllocationPicker';
 
 const SelfTransfer = () => {
     const [accounts, setAccounts] = useState([]);
@@ -123,12 +125,49 @@ const SelfTransfer = () => {
             Alert.alert('Failed to transfer');
         }
     };
-
+    
     return (
         <ScrollView style={styles.container}>
-            <Button title="Back" onPress={() => router.back()} color="black" />
-
-            <Text style={styles.label}>Amount</Text>
+            {/* <Button title="Back" onPress={() => router.back()} color="black" /> */}
+            <Text style={styles.title}>Self Transfer</Text>
+            <AmountInput number={amount} setNumber={setAmount} placeholder='Enter Amount'></AmountInput>
+            <Text style={styles.subtitle}>From Account</Text>
+            <AccountPicker
+                selectedAccountId={fromAccountId}
+                setSelectedAccountId={setFromAccountId}
+                setSelectedAllocationId={setFromAllocationId}
+                accounts={accounts}
+            />
+            {fromAllocations.length > 0 && (
+                <AllocationPicker
+                    selectedAllocationId={fromAllocationId}
+                    setSelectedAllocationId={setFromAllocationId}
+                    allocations={fromAllocations}
+                />
+            )}
+            <Text style={styles.subtitle}>To Account</Text>
+            <AccountPicker
+                selectedAccountId={toAccountId}
+                setSelectedAccountId={setToAccountId}
+                setSelectedAllocationId={setToAllocationId}
+                accounts={accounts}
+            />
+            {toAllocations.length > 0 && (
+                <AllocationPicker
+                    selectedAllocationId={toAllocationId}
+                    setSelectedAllocationId={setToAllocationId}
+                    allocations={toAllocations}
+                />
+            )}
+            <NotesInput notes={notes} setNotes={setNotes} />
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+                        Transfer
+                    </Text>
+                </TouchableOpacity>
+            </View>
+            {/* <Text style={styles.label}>Amount</Text>
             <TextInput
                 style={styles.input}
                 keyboardType="numeric"
@@ -199,37 +238,38 @@ const SelfTransfer = () => {
                 value={notes}
                 onChangeText={setNotes}
                 placeholder="Optional note"
-            />
+            /> */}
 
-            <Button title="Transfer" onPress={handleSubmit} color="black" />
+            {/* <Button title="Transfer" onPress={handleSubmit} color="black" /> */}
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 16,
-        backgroundColor: '#fff',
-    },
-    label: {
-        fontWeight: '600',
-        fontSize: 16,
-        marginTop: 12,
-        marginBottom: 4,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#000',
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 10,
-        height: 48,
-    },
-    picker: {
-        borderWidth: 1,
-        borderColor: '#000',
-        marginBottom: 10,
-    },
+    container: { backgroundColor: 'white', height: '100%' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
+    subtitle: { fontSize: 16, textAlign: 'center', backgroundColor: 'white', paddingTop: 8 },
+    buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
+    button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    // label: {
+    //     fontWeight: '600',
+    //     fontSize: 16,
+    //     marginTop: 12,
+    //     marginBottom: 4,
+    // },
+    // input: {
+    //     borderWidth: 1,
+    //     borderColor: '#000',
+    //     borderRadius: 8,
+    //     padding: 10,
+    //     marginBottom: 10,
+    //     height: 48,
+    // },
+    // picker: {
+    //     borderWidth: 1,
+    //     borderColor: '#000',
+    //     marginBottom: 10,
+    // },
 });
 
 export default SelfTransfer;
