@@ -2,7 +2,11 @@
 
 Spendin is an all-in-one **personal finance management app** that helps you track expenses, visualize spending patterns, and plan your financial goals — all from a single, beautifully designed interface.
 
-> **Spendin** aims to be a comprehensive, open-source solution that makes managing your money effortless and insightful.
+---
+
+
+## 📥 Download - Version 1.0.9 alpha
+> 🔗 [Download APK (Android)](https://github.com/vivekx01/spendin/releases/download/1.0.9/Spendin-1.0.9-alpha.apk)
 
 ---
 
@@ -23,9 +27,7 @@ Spendin is an all-in-one **personal finance management app** that helps you trac
   <img src="https://github.com/user-attachments/assets/55baff2b-04f8-4a26-91b0-c4cb66cdbab0" width="20%" />
 </p>
 
----
 
-## 📥 Download - Version 1.0.9 alpha
 
-> 🔗 [Download APK (Android)](https://github.com/vivekx01/spendin/releases/download/1.0.9/Spendin-1.0.9-alpha.apk)
+
 
