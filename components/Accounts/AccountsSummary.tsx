@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
+import roundOff from '@/utilities'
 
 interface accountSummary {
     accountType: string,
@@ -27,7 +28,7 @@ const AccountsSummary: React.FC<accountSummary> = ({accountType, accountSummary}
                     ? 'Total Outstanding'
                     : 'Unknown Unit'}:  
                     <Text style={{ fontWeight: 'bold', color: accountType === 'credit' ? '#d32f2f' : '#388e3c',
-                    }}> ₹{accountSummary.totalBalance}</Text>
+                    }}> ₹{roundOff(accountSummary.totalBalance)}</Text>
                 </Text>
             </View>
             <Image style={{ width: 120, height: 100, borderRadius: 25 }} source={accountType === 'bank' ? require('@/assets/images/bankaccounts.png'):require('@/assets/images/creditcardaccounts.png')}></Image>
