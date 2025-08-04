@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, TextInput, View, Button, Alert, Text, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { StyleSheet, View, Alert, Text, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { getAllAccounts } from '@/db';
 import { getAllocationsByAccountId } from '@/db/allocations';
@@ -113,8 +112,8 @@ const AddNewSpend = () => {
       setSelectedAccountId('');
       setSelectedAllocationId('');
       setNotes('');
-      setTransactionType('Expense');
-      setSpendName('Expense');
+      // setTransactionType('Expense');
+      // setSpendName('Expense');
     } else {
       Alert.alert('Error', 'Failed to add transaction. Error: ' + success);
     }

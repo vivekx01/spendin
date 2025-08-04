@@ -3,16 +3,17 @@ import * as Crypto from 'expo-crypto';
 import { logError } from './errorlogs';
 
 /**
- * Add a new spend + update account and allocation balances
- * @param {Object} param0
- * @param {string} param0.spendSource - account id
- * @param {string} [param0.spendCategory] - allocation id (optional)
- * @param {number} param0.amount - always positive
- * @param {string} param0.transactionType - 'Income' or 'Expense'
- * @param {number} param0.datetime - timestamp
- * @param {string} param0.name - spend name
- * @param {string} [param0.notes] - optional notes
+ * @param {Object} params
+ * @param {string} params.spendSource
+ * @param {string} [params.spendCategory]
+ * @param {number} params.amount
+ * @param {string} params.accountType
+ * @param {string} params.transactionType
+ * @param {number} params.datetime
+ * @param {string} params.name
+ * @param {string} [params.notes]
  */
+
 export async function addNewSpend({ spendSource, spendCategory, amount, accountType , transactionType, datetime, name, notes }) {
     try {
         const db = await getDb();
