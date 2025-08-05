@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { View, Button, Text, Modal, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Button, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
 import { exportLogs } from '@/utilities/Home/exportLogs';
 import { exportAllData, pickAndImportDataFromFile } from '@/db';
 import SettingItem from '@/components/Home/SettingItem';
+import { useGoogleAuth } from '@/utilities/Home/oauth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchEmailsFromLastDay } from '@/utilities/Home/fetchEmails';
+
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
-
+    const { promptAsync, userEmail, accessToken, request } = useGoogleAuth();
     const navigateBack = () => {
         router.back();
     };
@@ -30,10 +34,42 @@ export default function Settings() {
         setModalVisible(false);
     };
 
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('userEmail');
+            await AsyncStorage.removeItem('accessToken');
+            Alert.alert("Logged out", "Your session has been cleared.");
+        } catch (err) {
+            Alert.alert("Error", "Couldn't log you out.");
+        }
+    };
+
+    const handleShowGoogleInfo = async () => {
+        try {
+            const email = await AsyncStorage.getItem('userEmail');
+            const token = await AsyncStorage.getItem('accessToken');
+
+            if (email && token) {
+                Alert.alert("Google Account Info", `Email: ${email}\nAccess Token: ${token}`);
+            } else {
+                Alert.alert("Not Signed In", "No Google account info found.");
+            }
+        } catch (err) {
+            Alert.alert("Error", "Unable to fetch saved Google info.");
+        }
+    };
+
+    const fetchAndShowEmails = async () => {
+        const token = await AsyncStorage.getItem('accessToken');
+        const emails = await fetchEmailsFromLastDay(token || "");
+        Alert.alert("Fetched Emails", JSON.stringify(emails[0], null, 2));
+    }
+
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Settings</Text>
-            <View style={{gap:6, marginTop: 10}}>
+            <View style={{ gap: 6, marginTop: 10 }}>
                 <TouchableOpacity onPress={handleCheckUpdate}>
                     <SettingItem label={"Check for Updates"}></SettingItem>
                 </TouchableOpacity>
@@ -46,6 +82,19 @@ export default function Settings() {
                 <TouchableOpacity onPress={pickAndImportDataFromFile}>
                     <SettingItem label={"Restore From a Backup"}></SettingItem>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={()=>{promptAsync()}}>
+                    <SettingItem label={"Sign in from Google Account"}></SettingItem>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleShowGoogleInfo}>
+                    <SettingItem label={"Show Google account information"} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={fetchAndShowEmails}>
+                    <SettingItem label={"Fetch emails"} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleLogout}>
+                    <SettingItem label={"Logout from Google"} />
+                </TouchableOpacity>
+
             </View>
             {/* <Button title="Back" onPress={navigateBack} color="black" />
             <Button title="Check for Updates" onPress={handleCheckUpdate} color="black" />
