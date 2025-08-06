@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Button, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
@@ -12,6 +12,7 @@ import { fetchEmailsFromLastDay } from '@/utilities/Home/fetchEmails';
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const { promptAsync, userEmail, accessToken, request } = useGoogleAuth();
     const navigateBack = () => {
         router.back();
     };
@@ -32,15 +33,6 @@ export default function Settings() {
         }
         setModalVisible(false);
     };
-
-    const handleGoogleSignIn = async () => {
-        const result = await useGoogleAuth();
-        if (result){
-            Alert.alert("Result", JSON.stringify(result))
-        } else {
-            Alert.alert("Operation cancelled by user")
-        }
-    }
 
     const handleLogout = async () => {
         try {
@@ -73,6 +65,7 @@ export default function Settings() {
         Alert.alert("Fetched Emails", JSON.stringify(emails[0], null, 2));
     }
 
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Settings</Text>
@@ -89,7 +82,7 @@ export default function Settings() {
                 <TouchableOpacity onPress={pickAndImportDataFromFile}>
                     <SettingItem label={"Restore From a Backup"}></SettingItem>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleGoogleSignIn}>
+                <TouchableOpacity onPress={()=>{promptAsync()}}>
                     <SettingItem label={"Sign in from Google Account"}></SettingItem>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleShowGoogleInfo}>
