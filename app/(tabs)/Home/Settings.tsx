@@ -12,7 +12,8 @@ import { fetchEmailsFromLastDay } from '@/utilities/Home/fetchEmails';
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const { promptAsync, userEmail, accessToken, request } = useGoogleAuth();
+    const { signIn, signOut, userEmail, accessToken } = useGoogleAuth();
+
     const navigateBack = () => {
         router.back();
     };
@@ -82,18 +83,22 @@ export default function Settings() {
                 <TouchableOpacity onPress={pickAndImportDataFromFile}>
                     <SettingItem label={"Restore From a Backup"}></SettingItem>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{promptAsync()}}>
-                    <SettingItem label={"Sign in from Google Account"}></SettingItem>
+                <TouchableOpacity onPress={signIn}>
+                    <SettingItem label={"Sign in from Google Account"} />
                 </TouchableOpacity>
+
                 <TouchableOpacity onPress={handleShowGoogleInfo}>
                     <SettingItem label={"Show Google account information"} />
                 </TouchableOpacity>
+
                 <TouchableOpacity onPress={fetchAndShowEmails}>
                     <SettingItem label={"Fetch emails"} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleLogout}>
+
+                <TouchableOpacity onPress={signOut}>
                     <SettingItem label={"Logout from Google"} />
                 </TouchableOpacity>
+
 
             </View>
             {/* <Button title="Back" onPress={navigateBack} color="black" />

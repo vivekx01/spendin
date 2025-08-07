@@ -1,68 +1,78 @@
 // oauth.ts
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuthRequest, makeRedirectUri, DiscoveryDocument, AuthSessionResult } from 'expo-auth-session';
-import * as WebBrowser from 'expo-web-browser';
-import { useState, useEffect } from 'react';
-import { storeCredentials } from '../authStorage';
+import { useEffect, useState } from 'react';
+import { GoogleSignin, statusCodes, User } from '@react-native-google-signin/google-signin';
 import { Alert } from 'react-native';
+import { storeCredentials } from '../authStorage';
 
-WebBrowser.maybeCompleteAuthSession();
-
-const discovery: DiscoveryDocument = {
-    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-    tokenEndpoint: 'https://oauth2.googleapis.com/token',
-    revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
-};
-
-// Replace with your actual client IDs from Google Cloud Console
-const CLIENT_IDS = {
-    android: "100681010203-5k753hmtdbrgafma9rh9h7cgoq5r4ems.apps.googleusercontent.com",
-    web: "100681010203-2af6gglqtl1b8v4guq0dh7nkrfucsg2d.apps.googleusercontent.com"
-};
-
-const SCOPES = ['openid', 'profile', 'email', 'https://www.googleapis.com/auth/gmail.readonly'];
+const CLIENT_ID = '100681010203-5k753hmtdbrgafma9rh9h7cgoq5r4ems.apps.googleusercontent.com';
 
 export const useGoogleAuth = () => {
+    const [userInfo, setUserInfo] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [userEmail, setUserEmail] = useState<string | null>(null);
-    const [request, response, promptAsync] = useAuthRequest(
-        {
-            clientId: CLIENT_IDS.android, // or pick appropriate clientID for your platform
-            scopes: SCOPES,
-            redirectUri: makeRedirectUri({
-                scheme: 'com.vivekx01.spendin'
-            }),
-        },
-        discovery
-    );
 
     useEffect(() => {
-        if (response?.type === 'success' && response.authentication?.accessToken) {
-            setAccessToken(response.authentication.accessToken);
-            fetchUserEmail(response.authentication.accessToken, storeCredentials);
-            Alert.alert("Success", "The sign in was successful")
-        }
-    }, [response]);
+        GoogleSignin.configure({
+            scopes: ['email', 'profile', 'https://www.googleapis.com/auth/gmail.readonly'],
+            webClientId: CLIENT_ID, // Use Web client ID here
+            offlineAccess: true,
+            forceCodeForRefreshToken: true,
+        });
 
-    // Fetch user's email using the access token
-    const fetchUserEmail = async (token: string, callback: (email: string, token: string) => void) => {
+        checkIfAlreadySignedIn();
+    }, []);
+
+    const checkIfAlreadySignedIn = async () => {
         try {
-            const resp = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const data = await resp.json();
-            setUserEmail(data.email);
-            callback(data.email, token); // store in AsyncStorage
+            const user = await GoogleSignin.getCurrentUser();
+            if (user) {
+                setUserInfo(user);
+                const tokens = await GoogleSignin.getTokens();
+                setAccessToken(tokens.accessToken);
+                storeCredentials(user.user.email, tokens.accessToken);
+            }
         } catch (err) {
-            setUserEmail(null);
+            console.log('Silent login failed:', err);
+        }
+    };
+
+
+    const signIn = async () => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const user: any = await GoogleSignin.signIn();
+            const tokens = await GoogleSignin.getTokens();
+            setUserInfo(user);
+            setAccessToken(tokens.accessToken);
+            storeCredentials(user.user.email, tokens.accessToken);
+            Alert.alert('Success', 'The sign in was successful');
+        } catch (error: any) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                Alert.alert('Cancelled', 'Sign in was cancelled');
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                Alert.alert('In Progress', 'Sign in is in progress');
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                Alert.alert('Play Services error', 'Google Play Services not available or outdated');
+            } else {
+                Alert.alert('Error', error.message);
+            }
+        }
+    };
+
+    const signOut = async () => {
+        try {
+            await GoogleSignin.signOut();
+            setUserInfo(null);
+            setAccessToken(null);
+        } catch (error) {
+            console.error('Sign out error', error);
         }
     };
 
     return {
-        // Use this in your button
-        promptAsync,
+        signIn,     // call this on your sign in button
+        signOut,    // optional, use to logout
         accessToken,
-        userEmail, // Will be set after successful auth
-        request,
+        userEmail: userInfo?.user?.email ?? null,
+        userInfo,
     };
 };
