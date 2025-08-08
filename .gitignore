@@ -10,6 +10,7 @@ web-build/
 expo-env.d.ts
 .idea
 bun.lockb
+creds
 
 # Native
 *.orig.*
