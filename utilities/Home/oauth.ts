@@ -24,12 +24,12 @@ export const useGoogleAuth = () => {
 
     const checkIfAlreadySignedIn = async () => {
         try {
-            const user = await GoogleSignin.getCurrentUser();
+            const user:any = await GoogleSignin.getCurrentUser();
             if (user) {
                 setUserInfo(user);
                 const tokens = await GoogleSignin.getTokens();
                 setAccessToken(tokens.accessToken);
-                storeCredentials(user.user.email, tokens.accessToken);
+                storeCredentials(user.email, tokens.accessToken);
             }
         } catch (err) {
             console.log('Silent login failed:', err);
