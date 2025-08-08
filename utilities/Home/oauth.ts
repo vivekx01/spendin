@@ -24,12 +24,12 @@ export const useGoogleAuth = () => {
 
     const checkIfAlreadySignedIn = async () => {
         try {
-            const user:any = await GoogleSignin.getCurrentUser();
-            if (user) {
-                setUserInfo(user);
+            const resp:any = await GoogleSignin.getCurrentUser();
+            if (resp) {
+                setUserInfo(resp);
                 const tokens = await GoogleSignin.getTokens();
                 setAccessToken(tokens.accessToken);
-                storeCredentials(user.email, tokens.accessToken);
+                await storeCredentials(resp.data.user.email, tokens.accessToken);
             }
         } catch (err) {
             console.log('Silent login failed:', err);
@@ -40,13 +40,13 @@ export const useGoogleAuth = () => {
     const signIn = async () => {
         try {
             await GoogleSignin.hasPlayServices();
-            let user: any = await GoogleSignin.signIn();
+            let resp: any = await GoogleSignin.signIn();
             const tokens = await GoogleSignin.getTokens();
-            user = parseIfJson(user);
+            resp = parseIfJson(resp);
             // return {user, tokens};
-            setUserInfo(user);
+            setUserInfo(resp);
             setAccessToken(tokens.accessToken);
-            storeCredentials(user.email, tokens.accessToken);
+            await storeCredentials(resp.data.user.email, tokens.accessToken);
             Alert.alert('Success', 'The sign in was successful');
         } catch (error: any) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -66,7 +66,7 @@ export const useGoogleAuth = () => {
             await GoogleSignin.signOut();
             setUserInfo(null);
             setAccessToken(null);
-            clearCredentials();
+            await clearCredentials();
             Alert.alert("You are signed out successfully");
         } catch (error) {
             console.error('Sign out error', error);

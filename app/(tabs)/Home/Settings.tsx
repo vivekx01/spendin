@@ -7,7 +7,7 @@ import { exportAllData, pickAndImportDataFromFile } from '@/db';
 import SettingItem from '@/components/Home/SettingItem';
 import { useGoogleAuth } from '@/utilities/Home/oauth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchEmailsFromLastDay } from '@/utilities/Home/fetchEmails';
+import { fetchLatestEmails } from '@/utilities/Home/fetchEmails';
 
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
@@ -62,7 +62,7 @@ export default function Settings() {
 
     const fetchAndShowEmails = async () => {
         const token = await AsyncStorage.getItem('accessToken');
-        const emails = await fetchEmailsFromLastDay(token || "");
+        const emails = await fetchLatestEmails(token || "");
         Alert.alert("Fetched Emails", JSON.stringify(emails[0], null, 2));
     }
 
