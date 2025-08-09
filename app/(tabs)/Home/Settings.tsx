@@ -63,7 +63,7 @@ export default function Settings() {
     const fetchAndShowEmails = async () => {
         const token = await AsyncStorage.getItem('accessToken');
         const emails = await fetchLatestEmails(token || "");
-        Alert.alert("Fetched Emails", JSON.stringify(emails[0], null, 2));
+        Alert.alert("Fetched Emails", JSON.stringify(emails, null, 2));
     }
 
 
