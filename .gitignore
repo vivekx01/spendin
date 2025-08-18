@@ -20,6 +20,8 @@ creds
 *.key
 *.mobileprovision
 
+modules/expo-sms/android/build/
+
 # Metro
 .metro-health-check*
 

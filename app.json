@@ -16,7 +16,10 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.vivekx01.spendin"
+      "package": "com.vivekx01.spendin",
+      "permissions" : [
+        "android.permission.READ_SMS"
+      ]
     },
     "web": {
       "bundler": "metro",

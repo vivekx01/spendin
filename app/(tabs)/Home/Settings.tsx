@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Button, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert, PermissionsAndroid, Platform } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
 import { exportLogs } from '@/utilities/Home/exportLogs';
@@ -8,6 +8,7 @@ import SettingItem from '@/components/Home/SettingItem';
 import { useGoogleAuth } from '@/utilities/Home/oauth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchLatestEmails } from '@/utilities/Home/fetchEmails';
+import expoSms from '@/modules/expo-sms';
 
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
@@ -66,6 +67,46 @@ export default function Settings() {
         Alert.alert("Fetched Emails", JSON.stringify(emails, null, 2));
     }
 
+    const fetchUserSms = async () => {
+        try {
+            // Request SMS permission if not already granted
+            const granted = await requestSmsPermission();
+            if (!granted) {
+                Alert.alert("Permission Denied", "No SMS permission given");
+                return;
+            }
+
+            // Now that permission is granted, fetch SMS messages
+            const inboxMessages = await expoSms.getSmsMessagesAsync('inbox');
+            Alert.alert("Messages: ", JSON.stringify(inboxMessages.slice(0, 50), null, 2));
+        } catch (err) {
+            Alert.alert("Error Occurred: ", JSON.stringify(err));
+        }
+    };
+
+    async function requestSmsPermission(): Promise<boolean> {
+        if (Platform.OS !== 'android') {
+            // iOS/other platforms don’t need this permission
+            return true;
+        }
+        const has = await PermissionsAndroid.check(
+            PermissionsAndroid.PERMISSIONS.READ_SMS
+        );
+        if (has) {
+            return true;
+        }
+        const result = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_SMS,
+            {
+                title: 'SMS Permission Required',
+                message: 'Spendin needs access to your SMS messages in order to fetch them.',
+                buttonPositive: 'OK',
+                buttonNegative: 'Cancel',
+            }
+        );
+        return result === PermissionsAndroid.RESULTS.GRANTED;
+    }
+
 
     return (
         <View style={styles.container}>
@@ -97,6 +138,10 @@ export default function Settings() {
 
                 <TouchableOpacity onPress={signOut}>
                     <SettingItem label={"Logout from Google"} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={fetchUserSms}>
+                    <SettingItem label={"Fetch SMS"} />
                 </TouchableOpacity>
 
 
