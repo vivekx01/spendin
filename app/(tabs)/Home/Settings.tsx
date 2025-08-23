@@ -9,6 +9,7 @@ import { useGoogleAuth } from '@/utilities/Home/oauth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchLatestEmails } from '@/utilities/Home/fetchEmails';
 import expoSms from '@/modules/expo-sms';
+import { scheduleLocalNotification } from '@/utilities/notification';
 
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
@@ -107,6 +108,10 @@ export default function Settings() {
         return result === PermissionsAndroid.RESULTS.GRANTED;
     }
 
+    async function showNotification() {
+        await scheduleLocalNotification("Hello", "HuiHui");
+    }
+
 
     return (
         <View style={styles.container}>
@@ -144,6 +149,9 @@ export default function Settings() {
                     <SettingItem label={"Fetch SMS"} />
                 </TouchableOpacity>
 
+                <TouchableOpacity onPress={showNotification}>
+                    <SettingItem label={"Show Notification"} />
+                </TouchableOpacity>
 
             </View>
             {/* <Button title="Back" onPress={navigateBack} color="black" />

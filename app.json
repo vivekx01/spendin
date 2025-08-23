@@ -17,8 +17,9 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.vivekx01.spendin",
-      "permissions" : [
-        "android.permission.READ_SMS"
+      "permissions": [
+        "android.permission.READ_SMS",
+        "android.permission.POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -38,7 +39,9 @@
         }
       ],
       "expo-sqlite",
-      "expo-font"
+      "expo-font",
+      "expo-background-task",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true
