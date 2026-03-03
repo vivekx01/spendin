@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
 import React, { useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
@@ -10,6 +10,7 @@ import {
 
 const index = () => {
   const [summary, setSummary] = React.useState('');
+  const [loading, setLoading] = React.useState(true);
   configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
     strict: false, // Reanimated runs in strict mode by default
@@ -45,24 +46,29 @@ const index = () => {
   }
 
   const fetchAccounts = async () => {
-    const accounts = await getAllAccounts();
-    const summary: any = {
-      bank: {
-        count: 0,
-        totalBalance: 0,
-      },
-      credit: {
-        count: 0,
-        totalBalance: 0,
-      },
-    };
+    try {
+      setLoading(true);
+      const accounts = await getAllAccounts();
+      const nextSummary: any = {
+        bank: {
+          count: 0,
+          totalBalance: 0,
+        },
+        credit: {
+          count: 0,
+          totalBalance: 0,
+        },
+      };
 
-    accounts.forEach((account: any) => {
-      const type = account.account_type === 'Credit' ? 'credit' : 'bank';
-      summary[type].count += 1;
-      summary[type].totalBalance += account.account_balance;
-    });
-    setSummary(summary);
+      accounts.forEach((account: any) => {
+        const type = account.account_type === 'Credit' ? 'credit' : 'bank';
+        nextSummary[type].count += 1;
+        nextSummary[type].totalBalance += account.account_balance;
+      });
+      setSummary(nextSummary);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteAccount = async (accountId: string) => {
@@ -92,13 +98,19 @@ const index = () => {
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <Text style={styles.title}>Accounts</Text>
-      <View style={{ gap: 8, marginTop: 10 }}>
-        {Object.keys(summary).map((accountType: any) => (
-          <Pressable key={accountType} style={{ padding: 12 }} onPress={() => navigateToAccountType(accountType)}>
-            <AccountsSummary accountType={accountType} accountSummary={summary[accountType]}></AccountsSummary>
-          </Pressable>
-        ))}
-      </View>
+      {loading && !summary ? (
+        <View style={{ paddingVertical: 24, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator size="small" color="#187ce4" />
+        </View>
+      ) : (
+        <View style={{ gap: 8, marginTop: 10 }}>
+          {Object.keys(summary).map((accountType: any) => (
+            <Pressable key={accountType} style={{ padding: 12 }} onPress={() => navigateToAccountType(accountType)}>
+              <AccountsSummary accountType={accountType} accountSummary={summary[accountType]}></AccountsSummary>
+            </Pressable>
+          ))}
+        </View>
+      )}
       {/* <Text style={{ fontSize: 22, fontWeight: '700', marginTop: 20, paddingHorizontal: 16 }}>Your accounts</Text> */}
 
       {/* <View style={styles.buttonContainer}>

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
 import React, { useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
@@ -8,6 +8,7 @@ import renderRightActions from '@/components/Accounts/RenderRightActions';
 
 const CreditAccounts = () => {
   const [accounts, setAccounts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
   const navigateToAddNewAccount = () => {
     router.navigate('/Accounts/AddNewAccount');
@@ -27,9 +28,14 @@ const CreditAccounts = () => {
   };
 
   const fetchAccounts = async () => {
-    const allAccounts = await getAllAccounts();
-    const creditAccounts = allAccounts.filter((acc:any) => acc.account_type === 'Credit');
-    setAccounts(creditAccounts);
+    try {
+      setLoading(true);
+      const allAccounts = await getAllAccounts();
+      const creditAccounts = allAccounts.filter((acc:any) => acc.account_type === 'Credit');
+      setAccounts(creditAccounts);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteAccount = async (accountId: string) => {
@@ -60,7 +66,11 @@ const CreditAccounts = () => {
     <View style={{ backgroundColor: 'white' }}>
       <Text style={styles.title}>Credit Cards</Text>
 
-      {accounts.length > 0 ? (
+      {loading && accounts.length === 0 ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="small" color="#187ce4" />
+        </View>
+      ) : accounts.length > 0 ? (
         <ScrollView style={styles.table}>
           {accounts.map((account: any) => {
             const outstandingDues = account.account_balance;
@@ -127,6 +137,11 @@ const styles = StyleSheet.create({
     height: '95%',
     width: '100%',
     paddingHorizontal: 16,
+  },
+  loaderContainer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonContainer: {
     backgroundColor: 'white',

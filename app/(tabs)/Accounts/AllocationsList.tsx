@@ -1,4 +1,4 @@
-import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, Pressable } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useLocalSearchParams, router, useFocusEffect } from 'expo-router';
 import { getAllocationsByAccountId } from '@/db/allocations';
@@ -23,6 +23,7 @@ const AllocationsList = () => {
 
     const [allocations, setAllocations] = useState<any[]>([]);
     const [balance, setBalance] = useState(Number(accountBalance));
+    const [loading, setLoading] = useState(true);
 
     const numericCreditLimit = accountType === 'Credit' && creditLimit != null ? Number(creditLimit) : null;
     const availableLimit = accountType === 'Credit' && numericCreditLimit != null
@@ -30,19 +31,24 @@ const AllocationsList = () => {
         : null;
 
     const fetchAllocations = useCallback(async () => {
-        const result = await getAllocationsByAccountId(accountId);
-        setAllocations(result);
+        try {
+            setLoading(true);
+            const result = await getAllocationsByAccountId(accountId);
+            setAllocations(result);
 
-        let totalAllocated = result.reduce(
-            (sum:number, alloc:any) => sum + alloc.allocation_amount,
-            0
-        );
+            let totalAllocated = result.reduce(
+                (sum:number, alloc:any) => sum + alloc.allocation_amount,
+                0
+            );
 
-        // For credit accounts, we're tracking how much of the owed amount is allocated
-        if (accountType === 'Credit') {
-            setBalance(Number(accountBalance) - totalAllocated);
-        } else {
-            setBalance(Number(accountBalance) - totalAllocated);
+            // For credit accounts, we're tracking how much of the owed amount is allocated
+            if (accountType === 'Credit') {
+                setBalance(Number(accountBalance) - totalAllocated);
+            } else {
+                setBalance(Number(accountBalance) - totalAllocated);
+            }
+        } finally {
+            setLoading(false);
         }
     }, [accountId, accountBalance, accountType]);
 
@@ -125,28 +131,34 @@ const AllocationsList = () => {
                 </View>
             )}
 
-            <ScrollView style={styles.table}>
-                {allocations.map((alloc: any) => (
-                    <Swipeable
-                        key={alloc.id}
-                        renderRightActions={() => renderAllocationRightActions(alloc)}
-                    >
-                        <Pressable onPress={() => navigateToCategoryTransactions(alloc)}>
-                            <Allocation
-                                allocation_name={alloc.allocation_name}
-                                allocation_amount={roundOff(alloc.allocation_amount)}
-                            />
-                        </Pressable>
-                    </Swipeable>
-                ))}
+            {loading && allocations.length === 0 ? (
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="small" color="#187ce4" />
+                </View>
+            ) : (
+                <ScrollView style={styles.table}>
+                    {allocations.map((alloc: any) => (
+                        <Swipeable
+                            key={alloc.id}
+                            renderRightActions={() => renderAllocationRightActions(alloc)}
+                        >
+                            <Pressable onPress={() => navigateToCategoryTransactions(alloc)}>
+                                <Allocation
+                                    allocation_name={alloc.allocation_name}
+                                    allocation_amount={roundOff(alloc.allocation_amount)}
+                                />
+                            </Pressable>
+                        </Swipeable>
+                    ))}
 
-                <TouchableOpacity onPress={navigateToAccountTransactions}>
-                    <Allocation
-                        allocation_name={accountType === 'Credit' ? 'Outstanding Dues' : 'Others'}
-                        allocation_amount={roundOff(accountType === 'Credit' ? balance : Math.abs(balance))}
-                    />
-                </TouchableOpacity>
-            </ScrollView>
+                    <TouchableOpacity onPress={navigateToAccountTransactions}>
+                        <Allocation
+                            allocation_name={accountType === 'Credit' ? 'Outstanding Dues' : 'Others'}
+                            allocation_amount={roundOff(accountType === 'Credit' ? balance : Math.abs(balance))}
+                        />
+                    </TouchableOpacity>
+                </ScrollView>
+            )}
             <View style={styles.buttonContainer}>
                 {accountType !== 'Credit' ? (
                     <TouchableOpacity
@@ -215,6 +227,11 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 14,
+    },
+    loaderContainer: {
+        paddingVertical: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
 
