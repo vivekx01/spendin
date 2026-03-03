@@ -82,19 +82,7 @@ const AllocationsList = () => {
                     </TouchableOpacity>
                 ))}
 
-                {Math.abs(balance) > 1 && (
-                    <Allocation allocation_name={accountType === 'Credit' ? 'Outstanding Dues' : 'Others'} allocation_amount={roundOff(Math.abs(balance))}></Allocation>
-                    // <View>
-                    //     <View style={styles.row}>
-                    //         <Text style={styles.allocName}>
-                    //             {accountType === 'Credit' ? 'Outstanding Dues' : 'Others'}
-                    //         </Text>
-                    //         <Text style={styles.allocAmount}>
-                    //             ₹ {roundOff(Math.abs(balance))}
-                    //         </Text>
-                    //     </View>
-                    // </View>
-                )}
+                <Allocation allocation_name={accountType === 'Credit' ? 'Outstanding Dues' : 'Others'} allocation_amount={roundOff(accountType === 'Credit' ? balance : Math.abs(balance))}></Allocation>
             </ScrollView>
             <View style={styles.buttonContainer}>
                 {accountType !== 'Credit' ? (

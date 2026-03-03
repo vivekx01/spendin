@@ -11,6 +11,7 @@ expo-env.d.ts
 .idea
 bun.lockb
 creds
+modules/
 
 # Native
 *.orig.*

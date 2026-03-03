@@ -197,20 +197,25 @@ export async function deleteSpend(spendId) {
     try {
         const db = await getDb();
 
-        // Get spend info to reverse balances before deletion
+        // Get spend info and account type to reverse balances before deletion
         const spend = await db.getFirstAsync(`
-            SELECT spend_source, spend_category, spend_amount, transaction_type
-            FROM spends
-            WHERE id = ?
+            SELECT s.spend_source, s.spend_category, s.spend_amount, s.transaction_type, a.account_type
+            FROM spends s
+            JOIN accounts a ON s.spend_source = a.id
+            WHERE s.id = ?
         `, spendId);
 
         if (!spend) {
             throw new Error('Spend not found');
         }
 
-        const signedAmount = spend.transaction_type === 'Expense'
-            ? spend.spend_amount
-            : -spend.spend_amount;
+        // Reverse uses opposite sign of what addNewSpend applied (Bank: expense was -amount; Credit: expense was +amount)
+        let signedAmount;
+        if (spend.account_type === 'Credit') {
+            signedAmount = spend.transaction_type === 'Expense' ? -spend.spend_amount : spend.spend_amount;
+        } else {
+            signedAmount = spend.transaction_type === 'Expense' ? spend.spend_amount : -spend.spend_amount;
+        }
 
         // Reverse account balance
         await db.runAsync(`
