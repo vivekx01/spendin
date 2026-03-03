@@ -27,7 +27,7 @@ export default function Home() {
     const { theme, toggleTheme } = useTheme();
     const [userName, setUserName] = useState("User");
     const [recentSpends, setRecentSpends] = useState<Spend[]>([]);
-    const [maxSpends, setMaxSpends] =  useState<{ label: string; value: number }[]>([]);
+    const [monthlySpends, setMonthlySpends] =  useState<{ label: string; value: number }[]>([]);
     useFocusEffect(
         useCallback(() => {
             const loadData = async () => {
@@ -42,31 +42,43 @@ export default function Home() {
                 // Set recent 5 spends directly
                 setRecentSpends(sortedSpends.slice(0, 5));
 
-                // Filter spends in current month
+                // Build monthly expense totals for the last 6 months (including current)
                 const now = new Date();
-                const currentMonthSpends = sortedSpends.filter((spend) => {
-                    const spendDate = new Date(spend.spendDatetime);
-                    return (
-                        spendDate.getFullYear() === now.getFullYear() &&
-                        spendDate.getMonth() === now.getMonth()
-                    );
+                const monthsToShow = 6;
+                const monthlyMap: Record<string, number> = {};
+
+                for (let i = monthsToShow - 1; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const key = `${d.getFullYear()}-${d.getMonth()}`;
+                    monthlyMap[key] = 0;
+                }
+
+                spends.forEach((spend) => {
+                    if (spend.transactionType?.toLowerCase() !== "expense") return;
+                    const d = new Date(spend.spendDatetime);
+                    const key = `${d.getFullYear()}-${d.getMonth()}`;
+                    if (monthlyMap[key] != null) {
+                        monthlyMap[key] += spend.spendAmount;
+                    }
                 });
 
-                // Calculate income & expenses based on transactionType
-                let maxTransactions: Record<string, number> = {};
-                currentMonthSpends.forEach((spend) => {
-                    if (spend.accountName == null) return;
-                    const label = spend.allocationName
-                        ? spend.allocationName
-                        : `Others (${spend.accountName})`;
+                const monthlyData: { label: string; value: number }[] = [];
+                for (let i = monthsToShow - 1; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const key = `${d.getFullYear()}-${d.getMonth()}`;
+                    const shortMonth = d.toLocaleString("default", { month: "short" });
+                    // Include year suffix only if crossing year boundary
+                    const label =
+                        monthsToShow > 6 || d.getFullYear() !== now.getFullYear()
+                            ? `${shortMonth} ${String(d.getFullYear()).slice(-2)}`
+                            : shortMonth;
+                    monthlyData.push({
+                        label,
+                        value: monthlyMap[key] || 0,
+                    });
+                }
 
-                    maxTransactions[label] = (maxTransactions[label] || 0) + 1;
-                });
-                let sorted = Object.entries(maxTransactions)
-                    .map(([label, value]) => ({ label, value }))
-                    .sort((a, b) => b.value - a.value);
-                sorted = sorted.slice(0, 4);    
-                setMaxSpends(sorted);
+                setMonthlySpends(monthlyData);
             };
 
             loadData();
@@ -120,9 +132,9 @@ export default function Home() {
                     backgroundColor: theme.colors.background
                 }}
             >
-                <Networth userName={userName}></Networth>
-                <SpendThisMonth data={maxSpends}></SpendThisMonth>
-                <RecentSpends spends={recentSpends}></RecentSpends>
+                <Networth userName={userName} />
+                <SpendThisMonth data={monthlySpends} />
+                <RecentSpends spends={recentSpends} />
             </View>
         </View>
     );
