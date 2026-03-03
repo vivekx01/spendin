@@ -5,10 +5,13 @@ import { getAllAccounts } from '@/db';
 import roundOff from '@/utilities';
 import LetterAvatar from './LetterAvatar';
 import { useTheme } from '@/context/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Networth = ({ userName }: { userName: string }) => {
   const { theme } = useTheme();
   const [networth, setNetWorth] = useState(0);
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+
   const fetchAccounts = async () => {
     const accountsData = await getAllAccounts();
     const totalBankBalance = accountsData
@@ -17,9 +20,19 @@ const Networth = ({ userName }: { userName: string }) => {
 
     setNetWorth(totalBankBalance);
   };
+  const loadAvatar = async () => {
+    try {
+      const uri = await AsyncStorage.getItem('@userAvatarUri');
+      setAvatarUri(uri);
+    } catch {
+      setAvatarUri(null);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchAccounts();
+      loadAvatar();
     }, [])
   );
   
@@ -27,8 +40,11 @@ const Networth = ({ userName }: { userName: string }) => {
     <View
       style={styles.container}
     >
-      {/* <Image source={require('@/assets/images/user-boy.png')} style={styles.image} /> */}
-      <LetterAvatar letter={userName.charAt(0)}></LetterAvatar>
+      {avatarUri ? (
+        <Image source={{ uri: avatarUri }} style={styles.image} />
+      ) : (
+        <LetterAvatar letter={userName.charAt(0)} size={72} fontSize={32} />
+      )}
       <View>
         <Text style={[styles.userName, { color: theme.colors.text }]}>{userName}</Text>
         <Text style={[styles.amount, { color: theme.colors.text }]}>₹ {roundOff(networth)}</Text>
@@ -46,7 +62,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 25
   },
-  image: { width: 100, height: 100, borderRadius: 50 },
+  image: { width: 72, height: 72, borderRadius: 36 },
   userName: { fontSize: 24, fontWeight: 'bold' },
   amount: { fontSize: 16, fontWeight: 'bold' },
   netWorthText: { fontSize: 14 }

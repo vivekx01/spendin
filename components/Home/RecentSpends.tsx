@@ -25,7 +25,7 @@ interface RecentSpendsProps {
 const RecentSpends: React.FC<RecentSpendsProps> = ({ spends }) => {
   const { theme } = useTheme();
   return (
-    <View style={{ marginTop: 2, height: '90%' }}>
+    <View style={{ marginTop: 16, height: '90%' }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: theme.colors.text }}>Recent Transactions</Text>
       {spends.map((spend) => (
         <Spend

@@ -5,16 +5,18 @@ import { router } from 'expo-router';
 import { exportLogs } from '@/utilities/Home/exportLogs';
 import { exportAllData, pickAndImportDataFromFile } from '@/db';
 import SettingItem from '@/components/Home/SettingItem';
-import { useGoogleAuth } from '@/utilities/Home/oauth';
+// import { useGoogleAuth } from '@/utilities/Home/oauth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchLatestEmails } from '@/utilities/Home/fetchEmails';
 import { useTheme } from '@/context/ThemeContext';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [avatarModalVisible, setAvatarModalVisible] = useState(false);
     const { theme } = useTheme();
-    const { signIn, signOut, userEmail, accessToken } = useGoogleAuth();
+    // const { signIn, signOut, userEmail, accessToken } = useGoogleAuth();
 
     const navigateBack = () => {
         router.back();
@@ -68,11 +70,48 @@ export default function Settings() {
         Alert.alert("Fetched Emails", JSON.stringify(emails, null, 2));
     }
 
+    const handleChangeAvatar = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission required', 'We need access to your photos to set a profile picture.');
+            setAvatarModalVisible(false);
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
+
+        if (result.canceled) {
+            setAvatarModalVisible(false);
+            return;
+        }
+
+        const uri = result.assets[0]?.uri;
+        if (uri) {
+            await AsyncStorage.setItem('@userAvatarUri', uri);
+            Alert.alert('Profile photo updated', 'Your avatar has been updated.');
+        }
+        setAvatarModalVisible(false);
+    };
+
+    const handleRemoveAvatar = async () => {
+        await AsyncStorage.removeItem('@userAvatarUri');
+        Alert.alert('Profile photo removed', 'Your avatar has been removed.');
+        setAvatarModalVisible(false);
+    };
+
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <Text style={[styles.title, { color: theme.colors.text }]}>Settings</Text>
             <View style={{ gap: 6, marginTop: 10 }}>
+                <TouchableOpacity onPress={() => setAvatarModalVisible(true)}>
+                    <SettingItem label={"Change profile photo"} />
+                </TouchableOpacity>
                 <TouchableOpacity onPress={handleCheckUpdate}>
                     <SettingItem label={"Check for Updates"}></SettingItem>
                 </TouchableOpacity>
@@ -85,6 +124,8 @@ export default function Settings() {
                 <TouchableOpacity onPress={pickAndImportDataFromFile}>
                     <SettingItem label={"Restore From a Backup"}></SettingItem>
                 </TouchableOpacity>
+                {/* Google auth items disabled for Expo Go testing */}
+                {/*
                 <TouchableOpacity onPress={signIn}>
                     <SettingItem label={"Sign in from Google Account"} />
                 </TouchableOpacity>
@@ -100,7 +141,7 @@ export default function Settings() {
                 <TouchableOpacity onPress={signOut}>
                     <SettingItem label={"Logout from Google"} />
                 </TouchableOpacity>
-
+                */}
 
             </View>
             {/* <Button title="Back" onPress={navigateBack} color="black" />
@@ -108,6 +149,35 @@ export default function Settings() {
             <Button title="Share Error logs" onPress={exportLogs} color="black" />
             <Button title="Create backup" onPress={exportAllData} color="black" />
             <Button title="Restore from a backup" onPress={pickAndImportDataFromFile} color="black" /> */}
+
+            {/* Avatar options modal */}
+            <Modal
+                visible={avatarModalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setAvatarModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.colors.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Profile photo</Text>
+                        <TouchableOpacity onPress={handleChangeAvatar} style={{ paddingVertical: 8 }}>
+                            <Text style={[styles.buttonText, { color: theme.colors.text }]}>
+                                Select from gallery
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleRemoveAvatar} style={{ paddingVertical: 8 }}>
+                            <Text style={[styles.buttonText, { color: theme.colors.expense }]}>
+                                Remove existing photo
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setAvatarModalVisible(false)} style={{ paddingVertical: 8 }}>
+                            <Text style={[styles.buttonText, { color: theme.colors.textSecondary }]}>
+                                Cancel
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
             <Modal
                 visible={modalVisible}
@@ -139,8 +209,8 @@ export default function Settings() {
 }
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: 'white', height: '100%' },
-    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
+    container: { height: '100%' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
     modalOverlay: {
         flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)',
     },
