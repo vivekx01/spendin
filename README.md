@@ -5,8 +5,8 @@ Spendin is an all-in-one **personal finance management app** that helps you trac
 ---
 
 
-## 📥 Download - Version 1.1.0 beta
-> 🔗 [Download APK (Android)](https://github.com/vivekx01/spendin/releases/download/1.1.0/Spendin-1.1.0-beta.apk)
+## 📥 Download - Version 1.1.1 beta
+> 🔗 [Download APK (Android)](https://github.com/vivekx01/spendin/releases/download/1.1.1/Spendin-1.1.1-beta.apk)
 
 ---
 
