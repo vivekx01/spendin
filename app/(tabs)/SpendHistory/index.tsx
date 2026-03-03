@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { deleteSpend, getAllSpends } from '@/db/spends';
 import { useFocusEffect } from 'expo-router';
 import EditSpendModal from '@/components/SpendHistory/EditSpend';
 import Transaction from '@/components/SpendHistory/Transaction';
 import roundOff from '@/utilities';
+import { useTheme } from '@/context/ThemeContext';
 
 interface Spend {
   id: string;
@@ -25,6 +26,7 @@ export default function SpendHistory() {
   const [selectedSpend, setSelectedSpend] = useState<Spend | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
 
   const isCurrentMonth = (timestamp: number) => {
     const spendDate = new Date(timestamp);
@@ -63,17 +65,17 @@ export default function SpendHistory() {
   
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Transaction History</Text>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.header, { color: theme.colors.text }]}>Transaction History</Text>
 
       {loading && spends.length === 0 ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="small" color="#187ce4" />
+          <ActivityIndicator size="small" color={theme.colors.accent} />
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {spends.length === 0 ? (
-            <Text style={styles.noData}>No transactions found for this month.</Text>
+            <Text style={[styles.noData, { color: theme.colors.textSecondary }]}>No transactions found for this month.</Text>
           ) : (
             spends.map((spend) => (
               <Transaction 

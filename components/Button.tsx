@@ -1,33 +1,33 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { useTheme } from '@/context/ThemeContext'
 
-const Button = ({title, onPress}) => {
-    return (
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.button}
-          onPress={onPress}
-        >
-          <Text style={styles.text}>
-            {title}
-          </Text>
-        </TouchableOpacity>
-      )
+const Button = ({ title, onPress }: { title: string; onPress: () => void }) => {
+  const { theme } = useTheme();
+  return (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      style={[styles.button, { backgroundColor: theme.colors.accent }]}
+      onPress={onPress}
+    >
+      <Text style={[styles.text, { color: theme.colors.card }]}>
+        {title}
+      </Text>
+    </TouchableOpacity>
+  )
 }
 
 const styles = StyleSheet.create({
-    button: {
-      backgroundColor: 'black',
-          paddingVertical: 15,
-          paddingHorizontal: 10,
-          borderRadius: 10,
-          alignItems: 'center',
-    },
-    text: {
-      color: 'white',
-      fontSize: 18,
-      fontWeight: 'bold',
-    }
-  })
+  button: {
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  }
+})
 
 export default Button

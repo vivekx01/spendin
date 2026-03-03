@@ -5,6 +5,7 @@ import { getAllSpends } from '@/db/spends';
 import roundOff from '@/utilities';
 import Transaction from '@/components/SpendHistory/Transaction';
 import EditSpendModal from '@/components/SpendHistory/EditSpend';
+import { useTheme } from '@/context/ThemeContext';
 
 interface Spend {
   id: string;
@@ -38,6 +39,7 @@ export default function CategoryTransactions() {
   const [selectedSpend, setSelectedSpend] = useState<Spend | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
 
   const isCurrentMonth = (timestamp: number) => {
     const spendDate = new Date(timestamp);
@@ -90,17 +92,17 @@ export default function CategoryTransactions() {
     : 'Account transactions';
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>{title}</Text>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.header, { color: theme.colors.text }]}>{title}</Text>
 
       {loading && spends.length === 0 ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="small" color="#187ce4" />
+          <ActivityIndicator size="small" color={theme.colors.accent} />
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {spends.length === 0 ? (
-            <Text style={styles.noData}>No transactions found.</Text>
+            <Text style={[styles.noData, { color: theme.colors.textSecondary }]}>No transactions found.</Text>
           ) : (
             spends.map((spend) => (
               <Transaction
@@ -143,7 +145,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flex: 1,
-    backgroundColor: '#fff',
   },
   header: {
     fontSize: 18,

@@ -1,12 +1,13 @@
-import { Text, View, Dimensions, TouchableOpacity, Alert } from "react-native";
+import { Text, View, TouchableOpacity, Alert } from "react-native";
 import { useState, useCallback } from "react";
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from "expo-router";
 import Networth from "@/components/Home/Networth";
 import { getUserInfo } from "@/db";
 import { getAllSpends } from "@/db/spends";
-import { Ionicons  } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import SpendThisMonth from "@/components/Home/SpendThisMonth";
 import RecentSpends from "@/components/Home/RecentSpends";
+import { useTheme } from "@/context/ThemeContext";
 
 // Type for Spend (updated to reflect new schema — has transactionType)
 interface Spend {
@@ -23,6 +24,7 @@ interface Spend {
 }
 
 export default function Home() {
+    const { theme, toggleTheme } = useTheme();
     const [userName, setUserName] = useState("User");
     const [recentSpends, setRecentSpends] = useState<Spend[]>([]);
     const [maxSpends, setMaxSpends] =  useState<{ label: string; value: number }[]>([]);
@@ -74,10 +76,10 @@ export default function Home() {
         router.push('/Home/Settings');
     }
     const switchTheme = () => {
-        Alert.alert("Coming Soon..", "Feature still under development")
-    }
+        toggleTheme();
+    };
     return (
-        <View style={{ flex: 1, alignItems: "center" }}>
+        <View style={{ flex: 1, alignItems: "center", backgroundColor: theme.colors.background }}>
             {/* Header */}
             <View
                 style={{
@@ -85,7 +87,7 @@ export default function Home() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     paddingHorizontal: 15,
-                    backgroundColor: "white",
+                    backgroundColor: theme.colors.header,
                     width: "100%",
                     height: "8%",
                 }}
@@ -94,14 +96,18 @@ export default function Home() {
                     onPress={switchTheme}
                     hitSlop={10}  
                 >
-                    <Ionicons name={"moon-outline"} size={25} color={"black"} />
+                    <Ionicons
+                        name={theme.mode === "dark" ? "sunny-outline" : "moon-outline"}
+                        size={25}
+                        color={theme.colors.text}
+                    />
                 </TouchableOpacity>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}} >Overview</Text>
+                <Text style={{fontSize: 18, fontWeight: 'bold', color: theme.colors.text}} >Overview</Text>
                 <TouchableOpacity
                     onPress={navigateToProfile}
                     hitSlop={10} 
                 >
-                    <Ionicons name={"settings-outline"} size={25} color={"black"} />
+                    <Ionicons name={"settings-outline"} size={25} color={theme.colors.text} />
                 </TouchableOpacity>
             </View>
 
@@ -111,7 +117,7 @@ export default function Home() {
                     width: "100%",
                     height: "92%",
                     paddingHorizontal: 15,
-                    backgroundColor: 'white'
+                    backgroundColor: theme.colors.background
                 }}
             >
                 <Networth userName={userName}></Networth>

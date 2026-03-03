@@ -1,12 +1,14 @@
-import { View, Text, TextInput } from 'react-native'
-import React, { useState } from 'react'
-import Button from '@/components/Button';
-import { router } from 'expo-router';
+import { View, Text, TextInput } from "react-native";
+import React, { useState } from "react";
+import Button from "@/components/Button";
+import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setUserInfo } from '@/db';
+import { setUserInfo } from "@/db";
+import { useTheme } from "@/context/ThemeContext";
 
 const EnterDetails = () => {
-    const [username, setUserName] = useState('');
+    const { theme } = useTheme();
+    const [username, setUserName] = useState("");
     const insertUserInfo = async () => {
         let user  = await setUserInfo(username);
         if (user) {
@@ -25,9 +27,10 @@ const EnterDetails = () => {
                 justifyContent: "center",
                 gap: 20,
                 width: "100%",
+                backgroundColor: theme.colors.background,
             }}
         >
-            <Text>Tell about yourself</Text>
+            <Text style={{ color: theme.colors.text }}>Tell about yourself</Text>
             <TextInput
                 onChangeText={setUserName}
                 value={username}
@@ -38,12 +41,13 @@ const EnterDetails = () => {
                     borderWidth: 1,
                     paddingHorizontal: 10,
                     borderRadius: 5,
-                    borderColor: '#000',
-                    backgroundColor: '#fff',
-                    width: '80%',
+                    borderColor: theme.colors.border,
+                    backgroundColor: theme.colors.card,
+                    color: theme.colors.text,
+                    width: "80%",
                 }}
             />
-            <Button title="Confirm" onPress={() => { insertUserInfo(); }} color={'black'} />
+            <Button title="Confirm" onPress={() => { insertUserInfo(); }} />
 
         </View>
     )

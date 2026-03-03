@@ -1,8 +1,8 @@
 import { View, Text } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import Spend from './Spend';
 import roundOff from '@/utilities';
-import { getAllAccounts } from '@/db';
+import { useTheme } from '@/context/ThemeContext';
 
 // Type definition for spend object (matches getAllSpends)
 interface SpendItem {
@@ -22,10 +22,11 @@ interface RecentSpendsProps {
   spends: SpendItem[];
 }
 
-const RecentSpends: React.FC<RecentSpendsProps> =  ({ spends }) => {
+const RecentSpends: React.FC<RecentSpendsProps> = ({ spends }) => {
+  const { theme } = useTheme();
   return (
     <View style={{ marginTop: 2, height: '90%' }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10}}>Recent Transactions</Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: theme.colors.text }}>Recent Transactions</Text>
       {spends.map((spend) => (
         <Spend
           key={spend.id}

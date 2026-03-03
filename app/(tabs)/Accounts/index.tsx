@@ -7,8 +7,10 @@ import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from 'react-native-reanimated';
+import { useTheme } from '@/context/ThemeContext';
 
 const index = () => {
+  const { theme } = useTheme();
   const [summary, setSummary] = React.useState('');
   const [loading, setLoading] = React.useState(true);
   configureReanimatedLogger({
@@ -96,11 +98,11 @@ const index = () => {
   );
 
   return (
-    <View style={{ backgroundColor: 'white', height: '100%' }}>
-      <Text style={styles.title}>Accounts</Text>
+    <View style={{ backgroundColor: theme.colors.background, height: '100%' }}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Accounts</Text>
       {loading && !summary ? (
         <View style={{ paddingVertical: 24, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="small" color="#187ce4" />
+          <ActivityIndicator size="small" color={theme.colors.accent} />
         </View>
       ) : (
         <View style={{ gap: 8, marginTop: 10 }}>
@@ -121,17 +123,17 @@ const index = () => {
         </TouchableOpacity>
       </View> */}
       {/* <Button title="Create New Allocation" onPress={navigateToCreateNewAllocation} /> */}
-      <View style={styles.buttonContainer}>
+      <View style={[styles.buttonContainer, { backgroundColor: theme.colors.background }]}>
         <TouchableOpacity
           onPress={navigateToAddNewAccount}
           style={{
-            backgroundColor: '#187ce4',
+            backgroundColor: theme.colors.accent,
             paddingVertical: 12,
             paddingHorizontal: 120,
             borderRadius: 50,
           }}
         >
-          <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>Add Account</Text>
+          <Text style={{ color: theme.colors.card, textAlign: 'center', fontSize: 16 }}>Add Account</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -139,9 +141,9 @@ const index = () => {
 };
 
 const styles = StyleSheet.create({
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
-  table: { marginTop: 10, backgroundColor: 'white', height: '78%', width: '100%', paddingHorizontal: 16 },
-  buttonContainer: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 }
+  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
+  table: { marginTop: 10, height: '78%', width: '100%', paddingHorizontal: 16 },
+  buttonContainer: { flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 }
 });
 
 export default index;

@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import CardIcon from '../CardIcon'
+import { useTheme } from '@/context/ThemeContext'
 
 interface allocationData {
     allocation_name: string,
@@ -8,12 +9,13 @@ interface allocationData {
 }
 
 const Allocation: React.FC<allocationData> = ({ allocation_name, allocation_amount }) => {
+    const { theme } = useTheme();
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
             <CardIcon></CardIcon>
             <View style={{ flex: 1 }}>
-                <Text style={styles.name}>{allocation_name}</Text>
-                <Text style={styles.category}>
+                <Text style={[styles.name, { color: theme.colors.text }]}>{allocation_name}</Text>
+                <Text style={[styles.category, { color: theme.colors.textSecondary }]}>
                     {allocation_name === 'Others'
                         ? 'Uncategorized / other transactions'
                         : allocation_name === 'Outstanding Dues'
@@ -21,7 +23,7 @@ const Allocation: React.FC<allocationData> = ({ allocation_name, allocation_amou
                         : 'Tap to view transactions'}
                 </Text>
             </View>
-            <Text style={[styles.amount, { color: "black" }]}>
+            <Text style={[styles.amount, { color: theme.colors.text }]}>
                 ₹{allocation_amount}
             </Text>
         </View>
@@ -34,7 +36,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 10,
         paddingHorizontal: 0,
-        backgroundColor: 'white',
         width: '100%',
     },
     name: {

@@ -4,8 +4,10 @@ import { useFocusEffect } from 'expo-router';
 import { getAllAccounts } from '@/db';
 import roundOff from '@/utilities';
 import LetterAvatar from './LetterAvatar';
+import { useTheme } from '@/context/ThemeContext';
 
 const Networth = ({ userName }: { userName: string }) => {
+  const { theme } = useTheme();
   const [networth, setNetWorth] = useState(0);
   const fetchAccounts = async () => {
     const accountsData = await getAllAccounts();
@@ -28,9 +30,9 @@ const Networth = ({ userName }: { userName: string }) => {
       {/* <Image source={require('@/assets/images/user-boy.png')} style={styles.image} /> */}
       <LetterAvatar letter={userName.charAt(0)}></LetterAvatar>
       <View>
-        <Text style={styles.userName}>{userName}</Text>
-        <Text style={styles.amount}>₹ {roundOff(networth)}</Text>
-        <Text style={styles.netWorthText}>Current Net Worth</Text>
+        <Text style={[styles.userName, { color: theme.colors.text }]}>{userName}</Text>
+        <Text style={[styles.amount, { color: theme.colors.text }]}>₹ {roundOff(networth)}</Text>
+        <Text style={[styles.netWorthText, { color: theme.colors.textSecondary }]}>Current Net Worth</Text>
       </View>
     </View>
   )

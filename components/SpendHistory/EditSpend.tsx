@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { deleteSpend, updateSpend } from '@/db';
 import { getAllAccounts } from '@/db/accounts';
 import { getAllocationsByAccountId } from '@/db/allocations';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function EditSpendModal({ visible, spend, onClose, onUpdated, setSpends }) {
     const [name, setName] = useState(spend.spendName);
@@ -14,6 +15,7 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
 
     const [accounts, setAccounts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const { theme } = useTheme();
 
     useEffect(() => {
         if (visible) {
@@ -62,30 +64,30 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
     return (
         <Modal visible={visible} animationType="slide" transparent>
             <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.title}>Edit Spend</Text>
+                <View style={[styles.modalContent, { backgroundColor: theme.colors.card }]}>
+                    <Text style={[styles.title, { color: theme.colors.text }]}>Edit Spend</Text>
 
                     <TextInput
                         value={name}
                         onChangeText={setName}
                         placeholder="Name"
-                        style={styles.input}
+                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text }]}
                     />
                     <TextInput
                         value={amount}
                         onChangeText={setAmount}
                         placeholder="Amount"
                         keyboardType="numeric"
-                        style={styles.input}
+                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text }]}
                     />
                     <TextInput
                         value={notes}
                         onChangeText={setNotes}
                         placeholder="Notes (optional)"
-                        style={styles.input}
+                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text }]}
                     />
 
-                    <Text style={styles.label}>Account</Text>
+                    <Text style={[styles.label, { color: theme.colors.text } ]}>Account</Text>
                     <Picker
                         selectedValue={spendSource}
                         onValueChange={(value) => setSpendSource(value)}
@@ -99,7 +101,7 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
 
                     {categories.length > 0 && (
                         <>
-                            <Text style={styles.label}>Category</Text>
+                            <Text style={[styles.label, { color: theme.colors.text }]}>Category</Text>
                             <Picker
                                 selectedValue={spend.spendCategory}
                                 onValueChange={(value) => setSpendCategory(value)}
@@ -117,7 +119,7 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
                             onPress={handleSave}
-                            style={[styles.button, { backgroundColor: '#4CAF50' }]}
+                            style={[styles.button, { backgroundColor: theme.colors.income }]}
                         >
                             <Text style={styles.buttonText}>Save</Text>
                         </TouchableOpacity>
@@ -125,15 +127,15 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
                             onPress={() => {
                                 handleDeleteSpend(spend.id);
                             }}
-                            style={[styles.button, { backgroundColor: '#f44336' }]}
+                            style={[styles.button, { backgroundColor: theme.colors.expense }]}
                         >
                             <Text style={styles.buttonText}>Delete</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={onClose}
-                            style={[styles.button, { backgroundColor: '#f0f2f4' }]}
+                            style={[styles.button, { backgroundColor: theme.colors.background }]}
                         >
-                            <Text style={{color: 'black'}}>Cancel</Text>
+                            <Text style={{color: theme.colors.text}}>Cancel</Text>
                         </TouchableOpacity>
                 </View>
             </View>

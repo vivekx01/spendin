@@ -1,10 +1,11 @@
-import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useLocalSearchParams, router, useFocusEffect } from 'expo-router';
 import { getAllocationsByAccountId } from '@/db/allocations';
 import roundOff from '@/utilities';
 import Allocation from '@/components/Accounts/Allocation';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { useTheme } from '@/context/ThemeContext';
 
 const AllocationsList = () => {
     const {
@@ -24,6 +25,7 @@ const AllocationsList = () => {
     const [allocations, setAllocations] = useState<any[]>([]);
     const [balance, setBalance] = useState(Number(accountBalance));
     const [loading, setLoading] = useState(true);
+    const { theme } = useTheme();
 
     const numericCreditLimit = accountType === 'Credit' && creditLimit != null ? Number(creditLimit) : null;
     const availableLimit = accountType === 'Credit' && numericCreditLimit != null
@@ -110,18 +112,18 @@ const AllocationsList = () => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* <Button title="Back" onPress={navigateBack} color="black" /> */}
-            <Text style={styles.title}>{accountName} - Categories</Text>
+            <Text style={[styles.title, { color: theme.colors.text }]}>{accountName} - Categories</Text>
 
             {accountType === 'Credit' && availableLimit != null && (
-                <View style={styles.limitCard}>
+                <View style={[styles.limitCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
                     <View>
-                        <Text style={styles.limitLabel}>Available limit</Text>
+                        <Text style={[styles.limitLabel, { color: theme.colors.textSecondary }]}>Available limit</Text>
                         <Text
                             style={[
                                 styles.limitValue,
-                                availableLimit < 0 && styles.limitValueNegative,
+                                { color: availableLimit < 0 ? theme.colors.expense : theme.colors.income },
                             ]}
                         >
                             ₹{roundOff(Math.abs(availableLimit))}
@@ -133,10 +135,10 @@ const AllocationsList = () => {
 
             {loading && allocations.length === 0 ? (
                 <View style={styles.loaderContainer}>
-                    <ActivityIndicator size="small" color="#187ce4" />
+                    <ActivityIndicator size="small" color={theme.colors.accent} />
                 </View>
             ) : (
-                <ScrollView style={styles.table}>
+                <ScrollView style={[styles.table, { backgroundColor: theme.colors.background }]}>
                     {allocations.map((alloc: any) => (
                         <Swipeable
                             key={alloc.id}
@@ -159,15 +161,15 @@ const AllocationsList = () => {
                     </TouchableOpacity>
                 </ScrollView>
             )}
-            <View style={styles.buttonContainer}>
+            <View style={[styles.buttonContainer, { backgroundColor: theme.colors.background }]}>
                 {accountType !== 'Credit' ? (
                     <TouchableOpacity
                         onPress={navigateToCreateNewAllocation}
-                        style={{ backgroundColor: '#187ce4', paddingVertical: 12, paddingHorizontal: 100, borderRadius: 50 }}
+                        style={{ backgroundColor: theme.colors.accent, paddingVertical: 12, paddingHorizontal: 100, borderRadius: 50 }}
                     >
-                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>Create New Category</Text>
+                        <Text style={{ color: theme.colors.card, textAlign: 'center', fontSize: 16 }}>Create New Category</Text>
                     </TouchableOpacity>
-                ) : <View style={{paddingVertical: 12, paddingHorizontal: 100, backgroundColor: 'white'}}>
+                ) : <View style={{paddingVertical: 12, paddingHorizontal: 100, backgroundColor: theme.colors.background}}>
                         <View style={{ height: 48, backgroundColor: 'transparent' }} />
                     </View>}
             </View>
@@ -176,9 +178,9 @@ const AllocationsList = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: 'white' },
-    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
-    table: { marginTop: 10, backgroundColor: 'white', height: '85%', width: '100%', paddingHorizontal: 16 },
+    container: {},
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
+    table: { marginTop: 10, height: '85%', width: '100%', paddingHorizontal: 16 },
     creditNote: {
         fontStyle: 'italic',
         color: 'gray',
@@ -189,33 +191,25 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         padding: 12,
         borderRadius: 10,
-        backgroundColor: '#f5f7ff',
         borderWidth: 1,
-        borderColor: '#d0d8ff',
     },
     limitLabel: {
         fontSize: 12,
-        color: '#637588',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
     limitValue: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#388e3c',
         marginTop: 4,
-    },
-    limitValueNegative: {
-        color: '#d32f2f',
     },
     limitMeta: {
         marginTop: 6,
         fontSize: 12,
         color: '#637588',
     },
-    buttonContainer: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 },
+    buttonContainer: { flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 },
     editButton: {
-        backgroundColor: '#1976d2',
         justifyContent: 'center',
         alignItems: 'center',
         width: 90,

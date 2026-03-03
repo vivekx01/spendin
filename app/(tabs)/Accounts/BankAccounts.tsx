@@ -1,12 +1,14 @@
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Pressable, ActivityIndicator } from 'react-native';
 import React, { useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { getAllAccounts, deleteAccountById } from '@/db';
 import Account from '@/components/Accounts/Account';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import renderRightActions from '@/components/Accounts/RenderRightActions';
+import { useTheme } from '@/context/ThemeContext';
 
 const BankAccounts = () => {
+  const { theme } = useTheme();
   const [accounts, setAccounts] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -62,12 +64,12 @@ const BankAccounts = () => {
   );
 
   return (
-    <View style={{ backgroundColor: 'white' }}>
-      <Text style={styles.title}>Bank Accounts</Text>
+    <View style={{ backgroundColor: theme.colors.background, height: '100%' }}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Bank Accounts</Text>
 
       {loading && accounts.length === 0 ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="small" color="#187ce4" />
+          <ActivityIndicator size="small" color={theme.colors.accent} />
         </View>
       ) : accounts.length > 0 ? (
         <ScrollView style={styles.table}>
@@ -97,7 +99,7 @@ const BankAccounts = () => {
           ))}
         </ScrollView>
       ) : (
-        <Text style={{ textAlign: 'center', marginTop: 20 }}>No bank accounts found</Text>
+        <Text style={{ textAlign: 'center', marginTop: 20, color: theme.colors.textSecondary }}>No bank accounts found</Text>
       )}
 
       {/* <View style={styles.buttonContainer}>
@@ -122,12 +124,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    backgroundColor: 'white',
     paddingTop: 16,
   },
   table: {
     marginTop: 10,
-    backgroundColor: 'white',
     height: '95%',
     width: '100%',
     paddingHorizontal: 16,

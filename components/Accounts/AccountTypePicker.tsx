@@ -1,26 +1,28 @@
-import { View, StyleSheet, Platform } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Make sure to install this if not yet
+import { View, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useTheme } from '@/context/ThemeContext';
 
 const AccountTypePicker = ({ selectedAccountType, setSelectedAccountType, accountTypes, placeholder = "Select Account Type" }) => {
+    const { theme } = useTheme();
     return (
         <View style={styles.pickerWrapper}>
-            <View style={styles.pickerContainer}>
+            <View style={[styles.pickerContainer, { backgroundColor: theme.colors.card }]}>
                 <Picker
                     selectedValue={selectedAccountType}
                     onValueChange={(itemValue) => {
                         setSelectedAccountType(itemValue);
                     }}
-                    style={styles.picker}
-                    dropdownIconColor="#121416"
+                    style={[styles.picker, { color: theme.colors.text }]}
+                    dropdownIconColor={theme.colors.text}
                     mode='dialog'
                 >
-                    <Picker.Item label={placeholder} value="" color="#6a7581" />
+                    <Picker.Item label={placeholder} value="" color={theme.colors.textSecondary} />
                     {accountTypes.map((account: any) => (
                         <Picker.Item
                             key={account}
                             label={account}
                             value={account}
-                            color="#121416"
+                            color={theme.colors.text}
                         />
                     ))}
                 </Picker>

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import ArrowDownIcon from "../ArrowDownIcon";
 import ArrowUpIcon from "../ArrowUpIcon";
+import { useTheme } from "@/context/ThemeContext";
 
 interface Spend {
   id: string;
@@ -29,6 +30,7 @@ interface SpendProps {
 }
 
 const Transaction: React.FC<SpendProps> = ({ type, name, amount, account, allocation, spend, updateSelectedSpend, updateShowModal}) => {
+  const { theme } = useTheme();
   const isIncome = type === 'income';
   return (
     <View style={styles.container}>
@@ -42,8 +44,8 @@ const Transaction: React.FC<SpendProps> = ({ type, name, amount, account, alloca
 
       {/* Transaction Name */}
       <View style={{ flex: 1 }}>
-        <Text style={styles.amount}>₹{Math.abs(amount)}</Text>
-        <Text style={styles.source}>{name} / {allocation ? allocation : `Others - ${account}`}</Text>
+        <Text style={[styles.amount, { color: theme.colors.text } ]}>₹{Math.abs(amount)}</Text>
+        <Text style={[styles.source, { color: theme.colors.textSecondary }]}>{name} / {allocation ? allocation : `Others - ${account}`}</Text>
       </View>
       <TouchableOpacity
         onPress={() => {
@@ -51,7 +53,7 @@ const Transaction: React.FC<SpendProps> = ({ type, name, amount, account, alloca
           updateShowModal(true);
         }}
       >
-        <Text style={[styles.edit, { color: "black" }]}>
+        <Text style={[styles.edit, { color: theme.colors.accent }]}>
           Edit
         </Text>
       </TouchableOpacity>

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useTheme } from '@/context/ThemeContext';
 
 const TransactionTypeToggle = ({ onChange, defaultValue = 'Expense' }) => {
     const [selected, setSelected] = useState(defaultValue);
+    const { theme } = useTheme();
 
     const handleSelect = (value: 'Expense' | 'Income') => {
         setSelected(value);
@@ -18,13 +20,13 @@ const TransactionTypeToggle = ({ onChange, defaultValue = 'Expense' }) => {
                         onPress={() => handleSelect(type)}
                         style={[
                             styles.toggleButton,
-                            selected === type && styles.selectedButton,
+                            selected === type && [styles.selectedButton, { backgroundColor: theme.colors.accent }],
                         ]}
                     >
                         <Text
                             style={[
                                 styles.toggleText,
-                                selected === type && styles.selectedText,
+                                selected === type && [styles.selectedText, { color: theme.colors.card }],
                             ]}
                             numberOfLines={1}
                             ellipsizeMode="tail"

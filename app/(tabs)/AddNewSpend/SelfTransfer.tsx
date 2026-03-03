@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { getAllAccounts } from '@/db';
 import { getAllocationsByAccountId } from '@/db/allocations';
 import { addNewSpend } from '@/db';
+import { useTheme } from '@/context/ThemeContext';
 
 import AmountInput from '@/components/AddNewSpend/AmountInput';
 import NotesInput from '@/components/AddNewSpend/NotesInput';
@@ -11,6 +12,7 @@ import AccountPicker from '@/components/AddNewSpend/AccountPicker';
 import AllocationPicker from '@/components/AddNewSpend/AllocationPicker';
 
 const SelfTransfer = () => {
+    const { theme } = useTheme();
     const [accounts, setAccounts] = useState([]);
     const [fromAccountId, setFromAccountId] = useState('');
     const [toAccountId, setToAccountId] = useState('');
@@ -127,11 +129,11 @@ const SelfTransfer = () => {
     };
     
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* <Button title="Back" onPress={() => router.back()} color="black" /> */}
-            <Text style={styles.title}>Self Transfer</Text>
+            <Text style={[styles.title, { color: theme.colors.text }]}>Self Transfer</Text>
             <AmountInput number={amount} setNumber={setAmount} placeholder='Enter Amount'></AmountInput>
-            <Text style={styles.subtitle}>From Account</Text>
+            <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>From Account</Text>
             <AccountPicker
                 selectedAccountId={fromAccountId}
                 setSelectedAccountId={setFromAccountId}
@@ -145,7 +147,7 @@ const SelfTransfer = () => {
                     allocations={fromAllocations}
                 />
             )}
-            <Text style={styles.subtitle}>To Account</Text>
+            <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>To Account</Text>
             <AccountPicker
                 selectedAccountId={toAccountId}
                 setSelectedAccountId={setToAccountId}
@@ -161,8 +163,8 @@ const SelfTransfer = () => {
             )}
             <NotesInput notes={notes} setNotes={setNotes} />
             <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={handleSubmit} style={styles.button}>
-                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+                <TouchableOpacity onPress={handleSubmit} style={[styles.button, { backgroundColor: theme.colors.accent }]}>
+                    <Text style={{ color: theme.colors.card, textAlign: 'center', fontSize: 16 }}>
                         Transfer
                     </Text>
                 </TouchableOpacity>
@@ -246,11 +248,11 @@ const SelfTransfer = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: 'white', height: '100%' },
-    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
-    subtitle: { fontSize: 16, textAlign: 'center', backgroundColor: 'white', paddingTop: 8 },
-    buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
-    button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    container: { height: '100%' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
+    subtitle: { fontSize: 16, textAlign: 'center', paddingTop: 8 },
+    buttonContainer: { flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
+    button: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
     // label: {
     //     fontWeight: '600',
     //     fontSize: 16,

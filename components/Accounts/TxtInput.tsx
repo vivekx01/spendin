@@ -1,11 +1,13 @@
 import React from 'react';
 import { TextInput, StyleSheet, View } from 'react-native';
+import { useTheme } from '@/context/ThemeContext';
 
 const TxtInput = ({ text, setText, placeholder = "Enter any string" }) => {
+    const { theme } = useTheme();
     return (
         <View style={styles.wrapper}>
             <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: theme.colors.card, color: theme.colors.text }]}
                 onChangeText={setText}
                 value={text}
                 placeholder= {placeholder}

@@ -1,44 +1,53 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/context/ThemeContext";
 
 const TabLayout = () => {
+  const { theme } = useTheme();
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: 'gray',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: theme.colors.accent,
+        tabBarInactiveTintColor: theme.colors.muted,
         tabBarPressOpacity: 0.6,
         tabBarShowLabel: true,
         tabBarStyle: {
           height: 65,
-          backgroundColor: 'white',
+          backgroundColor: theme.colors.tabBarBackground,
+          borderTopColor: theme.colors.border,
         },
-        tabBarItemStyle: { justifyContent: 'center' },
-        tabBarLabelStyle: { fontSize: 10, color: '#555', fontWeight: '400', marginTop: 5 },
+        tabBarItemStyle: { justifyContent: "center" },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          color: theme.colors.textSecondary,
+          fontWeight: "400",
+          marginTop: 5,
+        },
         tabBarIconStyle: { marginTop: 5 },
         tabBarIcon: ({ color }) => {
           let size = 30;
           let iconName;
           switch (route.name) {
-            case 'Home':
-              iconName = 'analytics';
+            case "Home":
+              iconName = "analytics";
               break;
-            case 'SpendHistory':
-              iconName = 'swap-vertical-outline';
+            case "SpendHistory":
+              iconName = "swap-vertical-outline";
               break;
-            case 'Accounts':
-              iconName = 'card';
+            case "Accounts":
+              iconName = "card";
               break;
-            case 'Investments':
-              iconName = 'trending-up';
+            case "Investments":
+              iconName = "trending-up";
               break;
-            case 'AddNewSpend':
-              iconName = 'add-circle-outline';
+            case "AddNewSpend":
+              iconName = "add-circle-outline";
               break;
             default:
-              iconName = 'ellipse-outline';
+              iconName = "ellipse-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;

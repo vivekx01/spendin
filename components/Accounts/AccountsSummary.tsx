@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import roundOff from '@/utilities'
+import { useTheme } from '@/context/ThemeContext'
 
 interface accountSummary {
     accountType: string,
@@ -8,26 +9,27 @@ interface accountSummary {
 }
 
 const AccountsSummary: React.FC<accountSummary> = ({accountType, accountSummary}) => {
+    const { theme } = useTheme();
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
             <View style={{ flex: 1 }}>
-                <Text style={styles.name}>
+                <Text style={[styles.name, { color: theme.colors.text }]}>
                     {accountType === 'bank'
                     ? 'Bank Accounts'
                     : accountType === 'credit'
                     ? 'Credit Cards'
                     : 'Unknown Account Type'}
                 </Text>
-                <Text style={styles.accountinfo}>
+                <Text style={[styles.accountinfo, { color: theme.colors.textSecondary }]}>
                     {accountSummary.count} accounts
                 </Text>
-                <Text style={styles.accountinfo}>
+                <Text style={[styles.accountinfo, { color: theme.colors.textSecondary }]}>
                     {accountType === 'bank'
                     ? 'Total Balance'
                     : accountType === 'credit'
                     ? 'Total Outstanding'
                     : 'Unknown Unit'}:  
-                    <Text style={{ fontWeight: 'bold', color: accountType === 'credit' ? '#d32f2f' : '#388e3c',
+                    <Text style={{ fontWeight: 'bold', color: accountType === 'credit' ? theme.colors.expense : theme.colors.income,
                     }}> ₹{roundOff(accountSummary.totalBalance)}</Text>
                 </Text>
             </View>

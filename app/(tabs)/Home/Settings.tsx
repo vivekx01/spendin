@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
 import { exportLogs } from '@/utilities/Home/exportLogs';
@@ -8,10 +8,12 @@ import SettingItem from '@/components/Home/SettingItem';
 import { useGoogleAuth } from '@/utilities/Home/oauth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchLatestEmails } from '@/utilities/Home/fetchEmails';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const { theme } = useTheme();
     const { signIn, signOut, userEmail, accessToken } = useGoogleAuth();
 
     const navigateBack = () => {
@@ -68,8 +70,8 @@ export default function Settings() {
 
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Settings</Text>
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <Text style={[styles.title, { color: theme.colors.text }]}>Settings</Text>
             <View style={{ gap: 6, marginTop: 10 }}>
                 <TouchableOpacity onPress={handleCheckUpdate}>
                     <SettingItem label={"Check for Updates"}></SettingItem>
@@ -114,19 +116,19 @@ export default function Settings() {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Update Available</Text>
+                    <View style={[styles.modalContent, { backgroundColor: theme.colors.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Update Available</Text>
                         {updateInfo && (
-                            <Text style={styles.modalText}>
+                            <Text style={[styles.modalText, { color: theme.colors.textSecondary }]}>
                                 Version {updateInfo.version} is available.{'\n'}Do you want to download and install it?
                             </Text>
                         )}
                         <View style={styles.buttonRow}>
                             <Pressable onPress={() => setModalVisible(false)}>
-                                <Text style={styles.buttonText}>Cancel</Text>
+                                <Text style={[styles.buttonText, { color: theme.colors.text }]}>Cancel</Text>
                             </Pressable>
                             <Pressable onPress={handleUpdate}>
-                                <Text style={styles.buttonText}>Update</Text>
+                                <Text style={[styles.buttonText, { color: theme.colors.accent }]}>Update</Text>
                             </Pressable>
                         </View>
                     </View>

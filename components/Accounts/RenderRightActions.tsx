@@ -1,26 +1,24 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useTheme } from '@/context/ThemeContext';
 
-const renderRightActions = (accountId: string, handleDeleteAccount: (id: string) => void) => (
+const RenderRightActions = ({ accountId, handleDeleteAccount }: { accountId: string; handleDeleteAccount: (id: string) => void }) => {
+    const { theme } = useTheme();
+    return (
+        <TouchableOpacity
+            onPress={() => handleDeleteAccount(accountId)}
+            style={[styles.deleteButton, { backgroundColor: theme.colors.expense }]}
+        >
+            <Text style={styles.deleteText}>Delete</Text>
+        </TouchableOpacity>
+    );
+};
 
-    <TouchableOpacity
-        onPress={() => handleDeleteAccount(accountId)}
-        style={styles.deleteButton}
-    >
-        <Text style={styles.deleteText}>Delete</Text>
-    </TouchableOpacity>
-
-);
-
-export default renderRightActions;
+export default function renderRightActions(accountId: string, handleDeleteAccount: (id: string) => void) {
+    return <RenderRightActions accountId={accountId} handleDeleteAccount={handleDeleteAccount} />;
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'flex-end',
-    },
     deleteButton: {
-        backgroundColor: '#e53935',
         justifyContent: 'center',
         alignItems: 'center',
         width: 100,

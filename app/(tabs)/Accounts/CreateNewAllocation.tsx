@@ -6,8 +6,10 @@ import { router } from 'expo-router';
 import TxtInput from '@/components/Accounts/TxtInput';
 import AmountInput from '@/components/AddNewSpend/AmountInput';
 import AllocationAccountPicker from '@/components/Accounts/AllocationAccountPicker';
+import { useTheme } from '@/context/ThemeContext';
 
 const CreateNewAllocation = () => {
+    const { theme } = useTheme();
     const [allocationName, setAllocationName] = useState('');
     const [allocationAmount, setAllocationAmount] = useState('');
     const [allocationAccount, setAllocationAccount] = useState('');
@@ -55,11 +57,11 @@ const CreateNewAllocation = () => {
 
     const noBankAccounts = bankAccounts.length === 0;
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* <Button title="Back" onPress={navigateBack} color={'black'} /> */}
-            <Text style={styles.title}>Edit Allocation</Text>
+            <Text style={[styles.title, { color: theme.colors.text }]}>Edit Allocation</Text>
             {noBankAccounts ? (
-                <Text style={{ marginTop: 20, fontSize: 16, color: 'red', textAlign : 'center' }}>
+                <Text style={{ marginTop: 20, fontSize: 16, color: theme.colors.expense, textAlign : 'center' }}>
                     Allocations can only be created for bank-type accounts. No bank accounts found.
                 </Text>
             ) : (
@@ -100,13 +102,13 @@ const CreateNewAllocation = () => {
                         </Picker>
                     </View> */}
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity onPress={handleSave} style={styles.button}>
-                            <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+                        <TouchableOpacity onPress={handleSave} style={[styles.button, { backgroundColor: theme.colors.accent }]}>
+                            <Text style={{ color: theme.colors.card, textAlign: 'center', fontSize: 16 }}>
                                 Create
                             </Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => router.back()} style={styles.cancelbutton}>
-                            <Text style={{ color: 'black', textAlign: 'center', fontSize: 16 }}>
+                        <TouchableOpacity onPress={() => router.back()} style={[styles.cancelbutton, { backgroundColor: theme.colors.card }]}>
+                            <Text style={{ color: theme.colors.text, textAlign: 'center', fontSize: 16 }}>
                                 Cancel
                             </Text>
                         </TouchableOpacity>
@@ -119,11 +121,11 @@ const CreateNewAllocation = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: 'white', height: '100%' },
-    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
-    buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
-    button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
-    cancelbutton: {backgroundColor:'#ddd', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    container: { height: '100%' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
+    buttonContainer: { flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
+    button: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    cancelbutton: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
     // label: {
     //     marginTop: 12,
     //     marginBottom: 4,

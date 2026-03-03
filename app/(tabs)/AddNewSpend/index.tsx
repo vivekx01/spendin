@@ -11,6 +11,7 @@ import AccountPicker from '@/components/AddNewSpend/AccountPicker';
 import AllocationPicker from '@/components/AddNewSpend/AllocationPicker';
 import NotesInput from '@/components/AddNewSpend/NotesInput';
 import SpendNameInput from '@/components/AddNewSpend/SpendNameInput';
+import { useTheme } from '@/context/ThemeContext';
 
 interface Account {
   id: string;
@@ -27,6 +28,7 @@ interface Allocation {
 }
 
 const AddNewSpend = () => {
+  const { theme } = useTheme();
   const [number, setNumber] = useState('');
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [selectedAllocationId, setSelectedAllocationId] = useState('');
@@ -124,8 +126,8 @@ const AddNewSpend = () => {
   };
   
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Add Transaction</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Add Transaction</Text>
       <TransactionTypeToggle onChange={(type:'Expense' | 'Income') => setTransactionType(type)} />
       <AmountInput number={number} setNumber={setNumber} />
       <SpendNameInput spendName={spendName} setSpendName={setSpendName} />
@@ -145,13 +147,13 @@ const AddNewSpend = () => {
       <NotesInput notes={notes} setNotes={setNotes} />
       <View style={styles.buttonContainer}
       >
-        <TouchableOpacity onPress={handlePress} style={styles.button}>
-          <Text style={{color:'white', textAlign:'center', fontSize: 16}}>
+        <TouchableOpacity onPress={handlePress} style={[styles.button, { backgroundColor: theme.colors.accent }]}>
+          <Text style={{color: theme.colors.card, textAlign:'center', fontSize: 16}}>
             Add Transaction
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={navigateToSelfTransfer} style={styles.selftransferbutton}>
-          <Text style={{color:'white', textAlign:'center', fontSize: 16}}>
+        <TouchableOpacity onPress={navigateToSelfTransfer} style={[styles.selftransferbutton, { backgroundColor: theme.colors.income }]}>
+          <Text style={{color: theme.colors.card, textAlign:'center', fontSize: 16}}>
             Self Transfer
           </Text>
         </TouchableOpacity>
@@ -238,7 +240,6 @@ const AddNewSpend = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
     height: '100%'
   },
   title: {
@@ -247,9 +248,9 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     fontWeight: 'bold'
   },
-  buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 16, gap: 10},
-  button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
-  selftransferbutton: {backgroundColor:'#388e3c', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
+  buttonContainer: { flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 16, gap: 10},
+  button: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+  selftransferbutton: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
 });
 // const styles = StyleSheet.create({
 //   container: {
