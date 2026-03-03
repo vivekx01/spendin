@@ -20,7 +20,7 @@ const Account: React.FC<accountData> = ({ account_name, account_type, account_ba
             )}
             <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{account_name}</Text>
-                <Text style={styles.category}>{account_type == "Bank" ? "Bank Account" : "Credit Line"}</Text>
+                <Text style={styles.category}>{account_type === "Bank" ? "Bank Account" : "Outstanding Dues"}</Text>
             </View>
             <Text style={[styles.amount, { color: "black" }]}>
                 ₹{roundOff(account_balance)}

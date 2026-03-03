@@ -17,11 +17,12 @@ const CreditAccounts = () => {
     accountId: string,
     accountName: string,
     accountBalance: number,
-    accountType: string
+    accountType: string,
+    creditLimit?: number
   ) => {
     router.navigate({
       pathname: '/Accounts/AllocationsList',
-      params: { accountId, accountName, accountBalance, accountType },
+      params: { accountId, accountName, accountBalance, accountType, creditLimit: creditLimit?.toString() },
     });
   };
 
@@ -62,7 +63,7 @@ const CreditAccounts = () => {
       {accounts.length > 0 ? (
         <ScrollView style={styles.table}>
           {accounts.map((account: any) => {
-            const availableCredit = account.credit_limit - account.account_balance;
+            const outstandingDues = account.account_balance;
 
             return (
               <Swipeable
@@ -76,14 +77,15 @@ const CreditAccounts = () => {
                     account.id,
                     account.account_name,
                     account.account_balance,
-                    account.account_type
+                    account.account_type,
+                    account.credit_limit
                   )
                 }
               >
                 <Account
                   account_name={account.account_name}
                   account_type={account.account_type}
-                  account_balance={availableCredit}
+                  account_balance={outstandingDues}
                 />
               </Pressable>
             </Swipeable>

@@ -11,15 +11,22 @@ const AllocationsList = () => {
         accountName,
         accountBalance,
         accountType,
+        creditLimit,
     } = useLocalSearchParams<{
         accountId: string;
         accountName: string;
         accountBalance: string;
         accountType: string;
+        creditLimit?: string;
     }>();
 
     const [allocations, setAllocations] = useState<any[]>([]);
     const [balance, setBalance] = useState(Number(accountBalance));
+
+    const numericCreditLimit = accountType === 'Credit' && creditLimit != null ? Number(creditLimit) : null;
+    const availableLimit = accountType === 'Credit' && numericCreditLimit != null
+        ? numericCreditLimit - Number(accountBalance)
+        : null;
 
     const fetchAllocations = useCallback(async () => {
         const result = await getAllocationsByAccountId(accountId);
@@ -69,11 +76,22 @@ const AllocationsList = () => {
             {/* <Button title="Back" onPress={navigateBack} color="black" /> */}
             <Text style={styles.title}>{accountName} - Categories</Text>
 
-            {/* {accountType === 'Credit' && (
-                <Text style={styles.creditNote}>
-                    Credit account – Outstanding dues will be shown for such accounts.
-                </Text>
-            )} */}
+            {accountType === 'Credit' && availableLimit != null && (
+                <View style={styles.limitCard}>
+                    <View>
+                        <Text style={styles.limitLabel}>Available limit</Text>
+                        <Text
+                            style={[
+                                styles.limitValue,
+                                availableLimit < 0 && styles.limitValueNegative,
+                            ]}
+                        >
+                            ₹{roundOff(Math.abs(availableLimit))}
+                            {availableLimit < 0 ? ' over limit' : ''}
+                        </Text>
+                    </View>
+                </View>
+            )}
 
             <ScrollView style={styles.table}>
                 {allocations.map((alloc: any) => (
@@ -108,6 +126,35 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         color: 'gray',
         marginBottom: 8,
+    },
+    limitCard: {
+        marginTop: 10,
+        marginHorizontal: 16,
+        padding: 12,
+        borderRadius: 10,
+        backgroundColor: '#f5f7ff',
+        borderWidth: 1,
+        borderColor: '#d0d8ff',
+    },
+    limitLabel: {
+        fontSize: 12,
+        color: '#637588',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    limitValue: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#388e3c',
+        marginTop: 4,
+    },
+    limitValueNegative: {
+        color: '#d32f2f',
+    },
+    limitMeta: {
+        marginTop: 6,
+        fontSize: 12,
+        color: '#637588',
     },
     buttonContainer: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 }
 });
