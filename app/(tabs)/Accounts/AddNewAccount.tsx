@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { addNewAccount } from '@/db';
 import { router } from 'expo-router';
 import TxtInput from '@/components/Accounts/TxtInput';
 import AmountInput from '@/components/AddNewSpend/AmountInput';
-import AccountPicker from '@/components/AddNewSpend/AccountPicker';
 import AccountTypePicker from '@/components/Accounts/AccountTypePicker';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function AddNewAccount() {
+  const { theme } = useTheme();
   const [accountName, setAccountName] = useState('');
   const [accountType, setAccountType] = useState<'Bank' | 'Credit'>('Bank');
   const [accountBalance, setAccountBalance] = useState('');
@@ -42,9 +42,9 @@ export default function AddNewAccount() {
   };
   
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* <Button title="Back" onPress={() => router.back()} color={'black'} /> */}
-      <Text style={styles.title}>Create New Account</Text>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Create New Account</Text>
       <TxtInput text={accountName} setText={setAccountName} placeholder={'Enter account name'}></TxtInput>
       <AccountTypePicker selectedAccountType={accountType} setSelectedAccountType={setAccountType} accountTypes={["Bank","Credit"]}></AccountTypePicker>
       <AmountInput number={accountBalance} setNumber={setAccountBalance} placeholder= {accountType === 'Credit' ? 'Current Outstanding' : 'Account Balance'}></AmountInput>
@@ -95,15 +95,14 @@ export default function AddNewAccount() {
       )} */}
 
       {/* <Button title="Save Account" onPress={handleSave} color={'black'} /> */}
-      <View style={styles.buttonContainer}
-      >
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
-          <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handleSave} style={[styles.button, { backgroundColor: theme.colors.text }]}>
+          <Text style={{ color: theme.colors.background, textAlign: 'center', fontSize: 16 }}>
             Save Account
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.back()} style={styles.cancelbutton}>
-          <Text style={{ color: 'black', textAlign: 'center', fontSize: 16 }}>
+        <TouchableOpacity onPress={() => router.back()} style={[styles.cancelbutton, { backgroundColor: theme.colors.card }]}>
+          <Text style={{ color: theme.colors.text, textAlign: 'center', fontSize: 16 }}>
             Cancel
           </Text>
         </TouchableOpacity>
@@ -113,11 +112,11 @@ export default function AddNewAccount() {
 }
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: 'white', height: '100%' },
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
-  buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
-  button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
-  cancelbutton: {backgroundColor:'#ddd', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+  container: { height: '100%' },
+  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
+  buttonContainer: { flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
+  button: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+  cancelbutton: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
   // label: {
   //   marginBottom: 4,
   //   fontWeight: 'bold',

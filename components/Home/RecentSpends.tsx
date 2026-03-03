@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React from 'react';
 import Spend from './Spend';
 import roundOff from '@/utilities';
@@ -25,18 +25,24 @@ interface RecentSpendsProps {
 const RecentSpends: React.FC<RecentSpendsProps> = ({ spends }) => {
   const { theme } = useTheme();
   return (
-    <View style={{ marginTop: 16, height: '90%' }}>
+    <View style={{ marginTop: 16, flex: 1 }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: theme.colors.text }}>Recent Transactions</Text>
-      {spends.map((spend) => (
-        <Spend
-          key={spend.id}
-          type={spend.transactionType.toLowerCase()} // Ensure 'income' | 'expense' (lowercase if Spend component expects lowercase)
-          account = {spend.accountName}
-          allocation = {spend.allocationName}
-          name={spend.spendName}
-          amount={roundOff(spend.spendAmount)}
-        />
-      ))}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 8 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {spends.map((spend) => (
+          <Spend
+            key={spend.id}
+            type={spend.transactionType.toLowerCase()}
+            account={spend.accountName}
+            allocation={spend.allocationName}
+            name={spend.spendName}
+            amount={roundOff(spend.spendAmount)}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
 };

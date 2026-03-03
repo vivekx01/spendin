@@ -144,7 +144,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonContainer: {
-    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'center',
     paddingVertical: 10,

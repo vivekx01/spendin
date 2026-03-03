@@ -2,10 +2,10 @@
 import { View, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
-import Button from '@/components/Button';
 import { deleteAllocation, updateAllocation } from '@/db/allocations';
 import AmountInput from '@/components/AddNewSpend/AmountInput';
 import TxtInput from '@/components/Accounts/TxtInput';
+import { useTheme } from '@/context/ThemeContext';
 
 const EditAllocation = () => {
     const {
@@ -22,6 +22,7 @@ const EditAllocation = () => {
 
     const [editedName, setEditedName] = useState(allocationName);
     const [editedAmount, setEditedAmount] = useState(allocationAmount);
+    const { theme } = useTheme();
 
     const handleSave = async () => {
         if (!editedName || !editedAmount) {
@@ -64,8 +65,8 @@ const EditAllocation = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Edit Allocation</Text>
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <Text style={[styles.title, { color: theme.colors.text }]}>Edit Allocation</Text>
             <View>
                 {/* <TextInput
                     value={editedName}
@@ -86,18 +87,18 @@ const EditAllocation = () => {
                 <AmountInput number={editedAmount} setNumber={setEditedAmount} />
                 <View style={styles.buttonContainer}
                 >
-                    <TouchableOpacity onPress={handleSave} style={styles.button}>
-                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+                    <TouchableOpacity onPress={handleSave} style={[styles.button, { backgroundColor: theme.colors.text }]}>
+                        <Text style={{ color: theme.colors.background, textAlign: 'center', fontSize: 16 }}>
                             Save
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleDelete} style={styles.deletebutton}>
-                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 16 }}>
+                    <TouchableOpacity onPress={handleDelete} style={[styles.deletebutton, { backgroundColor: theme.colors.expense }]}>
+                        <Text style={{ color: theme.colors.card, textAlign: 'center', fontSize: 16 }}>
                             Delete
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.cancelbutton}>
-                        <Text style={{ color: 'black', textAlign: 'center', fontSize: 16 }}>
+                    <TouchableOpacity onPress={() => router.back()} style={[styles.cancelbutton, { backgroundColor: theme.colors.card }]}>
+                        <Text style={{ color: theme.colors.text, textAlign: 'center', fontSize: 16 }}>
                             Cancel
                         </Text>
                     </TouchableOpacity>
@@ -115,8 +116,8 @@ const EditAllocation = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: 'white', height: '100%' },
-    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', backgroundColor: 'white', paddingTop: 16 },
+    container: { height: '100%' },
+    title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
@@ -130,10 +131,10 @@ const styles = StyleSheet.create({
     //     flexDirection: 'row',
     //     marginTop: 10,
     // },
-    buttonContainer: {backgroundColor:'white', flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
-    button: {backgroundColor:'#187ce4', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
-    cancelbutton: {backgroundColor:'#ddd', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
-    deletebutton: {backgroundColor:'#d32f2f', paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
+    buttonContainer: { flexDirection:'column', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 25, gap: 10},
+    button: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    cancelbutton: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50},
+    deletebutton: { paddingVertical: 12, paddingHorizontal: 120, borderRadius: 50}
 });
 
 export default EditAllocation;
