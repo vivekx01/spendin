@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Modal, Pressable, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { checkForUpdate, openDownloadUrlInBrowser } from '@/utilities';
 import { router } from 'expo-router';
 import { exportLogs } from '@/utilities/Home/exportLogs';
-import { exportAllData, pickAndImportDataFromFile } from '@/db';
+import { exportAllData, pickAndImportDataFromFile, getUserInfo, updateUserName } from '@/db';
 import SettingItem from '@/components/Home/SettingItem';
 // import { useGoogleAuth } from '@/utilities/Home/oauth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,12 +15,27 @@ export default function Settings() {
     const [updateInfo, setUpdateInfo] = useState<{ version: string; downloadUrl: string } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [avatarModalVisible, setAvatarModalVisible] = useState(false);
+    const [nameModalVisible, setNameModalVisible] = useState(false);
+    const [newName, setNewName] = useState('');
     const { theme } = useTheme();
     // const { signIn, signOut, userEmail, accessToken } = useGoogleAuth();
 
     const navigateBack = () => {
         router.back();
     };
+
+    React.useEffect(() => {
+        (async () => {
+            try {
+                const info = await getUserInfo();
+                if (info?.name) {
+                    setNewName(info.name);
+                }
+            } catch {
+                // ignore
+            }
+        })();
+    }, []);
 
     const handleCheckUpdate = async () => {
         const info = await checkForUpdate();
@@ -104,6 +119,17 @@ export default function Settings() {
         setAvatarModalVisible(false);
     };
 
+    const handleSaveName = async () => {
+        const trimmed = newName.trim();
+        if (!trimmed) {
+            Alert.alert('Validation', 'Name cannot be empty.');
+            return;
+        }
+        await updateUserName(trimmed);
+        Alert.alert('Name updated', 'Your name has been updated.');
+        setNameModalVisible(false);
+    };
+
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -111,6 +137,9 @@ export default function Settings() {
             <View style={{ gap: 6, marginTop: 10 }}>
                 <TouchableOpacity onPress={() => setAvatarModalVisible(true)}>
                     <SettingItem label={"Change profile photo"} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setNameModalVisible(true)}>
+                    <SettingItem label={"Change name"} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleCheckUpdate}>
                     <SettingItem label={"Check for Updates"}></SettingItem>
@@ -175,6 +204,44 @@ export default function Settings() {
                                 Cancel
                             </Text>
                         </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Name change modal */}
+            <Modal
+                visible={nameModalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setNameModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.colors.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Change name</Text>
+                        <TextInput
+                            value={newName}
+                            onChangeText={setNewName}
+                            placeholder="Enter your name"
+                            placeholderTextColor={theme.colors.textSecondary}
+                            style={{
+                                borderWidth: 1,
+                                borderColor: theme.colors.border,
+                                borderRadius: 8,
+                                paddingHorizontal: 10,
+                                paddingVertical: 8,
+                                marginBottom: 16,
+                                color: theme.colors.text,
+                                fontSize: 16,
+                            }}
+                        />
+                        <View style={styles.buttonRow}>
+                            <Pressable onPress={() => setNameModalVisible(false)}>
+                                <Text style={[styles.buttonText, { color: theme.colors.textSecondary }]}>Cancel</Text>
+                            </Pressable>
+                            <Pressable onPress={handleSaveName}>
+                                <Text style={[styles.buttonText, { color: theme.colors.accent }]}>Save</Text>
+                            </Pressable>
+                        </View>
                     </View>
                 </View>
             </Modal>

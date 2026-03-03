@@ -16,3 +16,12 @@ export async function setUserInfo (name) {
     );
     return userId;
 }
+
+export async function updateUserName (name) {
+    const db = await getDb();
+    await db.runAsync(
+        "UPDATE userinfo SET name = ?",
+        name
+    );
+    return true;
+}
