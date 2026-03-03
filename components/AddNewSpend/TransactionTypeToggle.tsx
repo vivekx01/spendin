@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 
-const TransactionTypeToggle = ({ onChange, defaultValue = 'Expense' }) => {
+interface TransactionTypeToggleProps {
+    onChange?: (value: 'Expense' | 'Income') => void;
+    defaultValue?: 'Expense' | 'Income';
+}
+
+const TransactionTypeToggle: React.FC<TransactionTypeToggleProps> = ({ onChange, defaultValue = 'Expense' }) => {
     const [selected, setSelected] = useState(defaultValue);
     const { theme } = useTheme();
 
@@ -11,22 +16,25 @@ const TransactionTypeToggle = ({ onChange, defaultValue = 'Expense' }) => {
         onChange?.(value);
     };
 
+    const groupBackground = theme.mode === 'dark' ? '#111827' : '#f1f2f4';
+
     return (
         <View style={styles.container}>
-            <View style={styles.toggleGroup}>
-                {['Expense', 'Income'].map((type) => (
+            <View style={[styles.toggleGroup, { backgroundColor: groupBackground }]}>
+                {(['Expense', 'Income'] as const).map((type) => (
                     <Pressable
                         key={type}
                         onPress={() => handleSelect(type)}
                         style={[
                             styles.toggleButton,
-                            selected === type && [styles.selectedButton, { backgroundColor: theme.colors.accent }],
+                            selected === type && [styles.selectedButton, { backgroundColor: theme.colors.text }],
                         ]}
                     >
                         <Text
                             style={[
                                 styles.toggleText,
-                                selected === type && [styles.selectedText, { color: theme.colors.card }],
+                                { color: theme.colors.textSecondary },
+                                selected === type && [styles.selectedText, { color: theme.colors.background }],
                             ]}
                             numberOfLines={1}
                             ellipsizeMode="tail"
@@ -50,7 +58,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         height: 40,
-        backgroundColor: '#f1f2f4',
         borderRadius: 999,
         padding: 4,
         alignItems: 'center',
@@ -65,7 +72,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
     },
     selectedButton: {
-        backgroundColor: 'white',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
@@ -74,11 +80,9 @@ const styles = StyleSheet.create({
     },
     toggleText: {
         fontSize: 14,
-        color: '#6a7581',
         fontWeight: '500',
     },
     selectedText: {
-        color: '#121416',
     },
 });
 

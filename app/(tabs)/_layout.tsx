@@ -10,7 +10,7 @@ const TabLayout = () => {
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: theme.colors.accent,
+        tabBarActiveTintColor: theme.colors.text,
         tabBarInactiveTintColor: theme.colors.muted,
         tabBarPressOpacity: 0.6,
         tabBarShowLabel: true,
@@ -22,7 +22,6 @@ const TabLayout = () => {
         tabBarItemStyle: { justifyContent: "center" },
         tabBarLabelStyle: {
           fontSize: 10,
-          color: theme.colors.textSecondary,
           fontWeight: "400",
           marginTop: 5,
         },

@@ -165,9 +165,9 @@ const AllocationsList = () => {
                 {accountType !== 'Credit' ? (
                     <TouchableOpacity
                         onPress={navigateToCreateNewAllocation}
-                        style={{ backgroundColor: theme.colors.accent, paddingVertical: 12, paddingHorizontal: 100, borderRadius: 50 }}
+                        style={{ backgroundColor: theme.colors.text, paddingVertical: 10, paddingHorizontal: 100, borderRadius: 50 }}
                     >
-                        <Text style={{ color: theme.colors.card, textAlign: 'center', fontSize: 16 }}>Create New Category</Text>
+                        <Text style={{ color: theme.colors.background, textAlign: 'center', fontSize: 16 }}>Create New Category</Text>
                     </TouchableOpacity>
                 ) : <View style={{paddingVertical: 12, paddingHorizontal: 100, backgroundColor: theme.colors.background}}>
                         <View style={{ height: 48, backgroundColor: 'transparent' }} />
@@ -180,7 +180,7 @@ const AllocationsList = () => {
 const styles = StyleSheet.create({
     container: {},
     title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', paddingTop: 16 },
-    table: { marginTop: 10, height: '85%', width: '100%', paddingHorizontal: 16 },
+    table: { marginTop: 10, height: '86%', width: '100%', paddingHorizontal: 16 },
     creditNote: {
         fontStyle: 'italic',
         color: 'gray',

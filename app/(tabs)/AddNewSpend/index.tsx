@@ -147,8 +147,8 @@ const AddNewSpend = () => {
       <NotesInput notes={notes} setNotes={setNotes} />
       <View style={styles.buttonContainer}
       >
-        <TouchableOpacity onPress={handlePress} style={[styles.button, { backgroundColor: theme.colors.accent }]}>
-          <Text style={{color: theme.colors.card, textAlign:'center', fontSize: 16}}>
+        <TouchableOpacity onPress={handlePress} style={[styles.button, { backgroundColor: theme.colors.text }]}>
+          <Text style={{color: theme.colors.background, textAlign:'center', fontSize: 16}}>
             Add Transaction
           </Text>
         </TouchableOpacity>

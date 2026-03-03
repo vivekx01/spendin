@@ -53,7 +53,7 @@ const Transaction: React.FC<SpendProps> = ({ type, name, amount, account, alloca
           updateShowModal(true);
         }}
       >
-        <Text style={[styles.edit, { color: theme.colors.accent }]}>
+        <Text style={[styles.edit, { color: theme.colors.text }]}>
           Edit
         </Text>
       </TouchableOpacity>

@@ -7,10 +7,10 @@ const Button = ({ title, onPress }: { title: string; onPress: () => void }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.8}
-      style={[styles.button, { backgroundColor: theme.colors.accent }]}
+      style={[styles.button, { backgroundColor: theme.colors.text }]}
       onPress={onPress}
     >
-      <Text style={[styles.text, { color: theme.colors.card }]}>
+      <Text style={[styles.text, { color: theme.colors.background }]}>
         {title}
       </Text>
     </TouchableOpacity>

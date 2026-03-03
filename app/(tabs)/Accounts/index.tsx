@@ -127,13 +127,13 @@ const index = () => {
         <TouchableOpacity
           onPress={navigateToAddNewAccount}
           style={{
-            backgroundColor: theme.colors.accent,
+            backgroundColor: theme.colors.text,
             paddingVertical: 12,
             paddingHorizontal: 120,
             borderRadius: 50,
           }}
         >
-          <Text style={{ color: theme.colors.card, textAlign: 'center', fontSize: 16 }}>Add Account</Text>
+          <Text style={{ color: theme.colors.background, textAlign: 'center', fontSize: 16 }}>Add Account</Text>
         </TouchableOpacity>
       </View>
     </View>
