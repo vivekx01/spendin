@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { deleteSpend, updateSpend } from '@/db';
 import { getAllAccounts } from '@/db/accounts';
@@ -35,6 +35,11 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
         }
     }, [visible]);
 
+    const pickerItemTextColor =
+        Platform.OS === 'android' && theme.mode === 'dark' ? '#111111' : theme.colors.text;
+    const pickerPlaceholderColor =
+        Platform.OS === 'android' && theme.mode === 'dark' ? '#666666' : theme.colors.textSecondary;
+
     const handleSave = async () => {
         const success = await updateSpend({
             spendId: spend.id,
@@ -56,6 +61,7 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
         if (isSuccess) {
             setSpends(prevSpends => prevSpends.filter(spend => spend.id !== spendId));
             Alert.alert('Success', 'Spend deleted successfully');
+            onClose();
         } else {
             Alert.alert('Error', 'Failed to delete spend');
         }
@@ -71,30 +77,39 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
                         value={name}
                         onChangeText={setName}
                         placeholder="Name"
-                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text }]}
+                        placeholderTextColor={theme.colors.textSecondary}
+                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text, backgroundColor: theme.colors.card }]}
                     />
                     <TextInput
                         value={amount}
                         onChangeText={setAmount}
                         placeholder="Amount"
+                        placeholderTextColor={theme.colors.textSecondary}
                         keyboardType="numeric"
-                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text }]}
+                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text, backgroundColor: theme.colors.card }]}
                     />
                     <TextInput
                         value={notes}
                         onChangeText={setNotes}
                         placeholder="Notes (optional)"
-                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text }]}
+                        placeholderTextColor={theme.colors.textSecondary}
+                        style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text, backgroundColor: theme.colors.card }]}
                     />
 
                     <Text style={[styles.label, { color: theme.colors.text } ]}>Account</Text>
                     <Picker
                         selectedValue={spendSource}
                         onValueChange={(value) => setSpendSource(value)}
-                        style={styles.picker}
+                        style={[styles.picker, { backgroundColor: theme.colors.card, color: theme.colors.text }]}
+                        dropdownIconColor={theme.colors.text}
                     >
                         {accounts.map((acc) => (
-                            <Picker.Item key={acc.id} label={acc.account_name} value={acc.id} />
+                            <Picker.Item
+                                key={acc.id}
+                                label={acc.account_name}
+                                value={acc.id}
+                                color={pickerItemTextColor}
+                            />
                         ))}
                     </Picker>
 
@@ -103,14 +118,25 @@ export default function EditSpendModal({ visible, spend, onClose, onUpdated, set
                         <>
                             <Text style={[styles.label, { color: theme.colors.text }]}>Category</Text>
                             <Picker
-                                selectedValue={spend.spendCategory}
+                                selectedValue={spendCategory}
                                 onValueChange={(value) => setSpendCategory(value)}
-                                style={styles.picker}
+                                style={[styles.picker, { backgroundColor: theme.colors.card, color: theme.colors.text }]}
+                                dropdownIconColor={theme.colors.text}
                             >
                                 {categories.map((cat) => (
-                                    <Picker.Item key={cat.id} label={cat.allocation_name} value={cat.id} />
+                                    <Picker.Item
+                                        key={cat.id}
+                                        label={cat.allocation_name}
+                                        value={cat.id}
+                                        color={pickerItemTextColor}
+                                    />
                                 ))}
-                                <Picker.Item key="0" label="Others" value="" />
+                                <Picker.Item
+                                    key="0"
+                                    label="Others"
+                                    value=""
+                                    color={pickerPlaceholderColor}
+                                />
 
                             </Picker>
                         </>
@@ -154,7 +180,6 @@ const styles = StyleSheet.create({
     modalContent: {
         width: '85%',
         padding: 20,
-        backgroundColor: '#fff',
         borderRadius: 10,
     },
     title: {
@@ -178,7 +203,6 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     picker: {
-        backgroundColor: '#f0f0f0',
         borderRadius: 6,
         marginBottom: 10,
     },

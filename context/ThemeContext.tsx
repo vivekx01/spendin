@@ -54,7 +54,7 @@ const darkTheme: AppTheme = {
     card: "#050505",
     header: "#000000",
     text: "#f9fafb",
-    textSecondary: "#9ca3af",
+    textSecondary: "white",
     border: "#27272a",
     accent: "#60a5fa",
     muted: "#6b7280",
