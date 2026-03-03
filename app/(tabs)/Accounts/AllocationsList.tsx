@@ -1,9 +1,10 @@
-import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, Alert, TouchableOpacity, Pressable } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useLocalSearchParams, router, useFocusEffect } from 'expo-router';
 import { getAllocationsByAccountId } from '@/db/allocations';
 import roundOff from '@/utilities';
 import Allocation from '@/components/Accounts/Allocation';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 const AllocationsList = () => {
     const {
@@ -55,7 +56,33 @@ const AllocationsList = () => {
         router.back();
     };
 
-    const startEditing = (alloc: any) => {
+    const navigateToCategoryTransactions = (alloc: any) => {
+        router.push({
+            pathname: '/Accounts/CategoryTransactions',
+            params: {
+                accountId,
+                accountName,
+                allocationId: alloc.id,
+                allocationName: alloc.allocation_name,
+            },
+        });
+    };
+
+    const navigateToAccountTransactions = () => {
+        router.push({
+            pathname: '/Accounts/CategoryTransactions',
+            params: {
+                accountId,
+                accountName,
+            },
+        });
+    };
+
+    const navigateToCreateNewAllocation = () => {
+        router.navigate('/Accounts/CreateNewAllocation');
+    };
+
+    const handleEditAllocation = (alloc: any) => {
         router.push({
             pathname: '/Accounts/EditAllocation',
             params: {
@@ -67,9 +94,14 @@ const AllocationsList = () => {
         });
     };
 
-    const navigateToCreateNewAllocation = () => {
-        router.navigate('/Accounts/CreateNewAllocation');
-    };
+    const renderAllocationRightActions = (alloc: any) => (
+        <TouchableOpacity
+            onPress={() => handleEditAllocation(alloc)}
+            style={styles.editButton}
+        >
+            <Text style={styles.editText}>Edit</Text>
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
@@ -95,12 +127,25 @@ const AllocationsList = () => {
 
             <ScrollView style={styles.table}>
                 {allocations.map((alloc: any) => (
-                    <TouchableOpacity key={alloc.id} onPress={() => startEditing(alloc)}>
-                        <Allocation allocation_name={alloc.allocation_name} allocation_amount={roundOff(alloc.allocation_amount)}></Allocation>
-                    </TouchableOpacity>
+                    <Swipeable
+                        key={alloc.id}
+                        renderRightActions={() => renderAllocationRightActions(alloc)}
+                    >
+                        <Pressable onPress={() => navigateToCategoryTransactions(alloc)}>
+                            <Allocation
+                                allocation_name={alloc.allocation_name}
+                                allocation_amount={roundOff(alloc.allocation_amount)}
+                            />
+                        </Pressable>
+                    </Swipeable>
                 ))}
 
-                <Allocation allocation_name={accountType === 'Credit' ? 'Outstanding Dues' : 'Others'} allocation_amount={roundOff(accountType === 'Credit' ? balance : Math.abs(balance))}></Allocation>
+                <TouchableOpacity onPress={navigateToAccountTransactions}>
+                    <Allocation
+                        allocation_name={accountType === 'Credit' ? 'Outstanding Dues' : 'Others'}
+                        allocation_amount={roundOff(accountType === 'Credit' ? balance : Math.abs(balance))}
+                    />
+                </TouchableOpacity>
             </ScrollView>
             <View style={styles.buttonContainer}>
                 {accountType !== 'Credit' ? (
@@ -156,7 +201,21 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#637588',
     },
-    buttonContainer: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 }
+    buttonContainer: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 },
+    editButton: {
+        backgroundColor: '#1976d2',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 90,
+        height: '100%',
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+    },
+    editText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
 });
 
 export default AllocationsList;
